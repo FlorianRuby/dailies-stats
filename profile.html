@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameStats - Profile</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">GameStats</div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="leaderboard.html">Leaderboard</a>
+                <a href="profile.html" id="profile-link">Profile</a>
+                <div id="auth-buttons">
+                    <button id="login-btn">Login</button>
+                    <button id="signup-btn">Sign Up</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="profile-section">
+            <div class="profile-header">
+                <h2>Your Profile</h2>
+                <button id="logout-btn" class="danger-btn">Logout</button>
+            </div>
+            <div class="profile-info">
+                <div class="user-details">
+                    <h3>Account Information</h3>
+                    <p>Email: <span id="user-email"></span></p>
+                    <p>Username: <span id="user-username"></span></p>
+                    <button id="edit-username-btn">Edit Username</button>
+                </div>
+                
+                <div class="user-stats">
+                    <h3>Your Statistics</h3>
+                    <div id="stats-container">
+                        <!-- Stats will be populated here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-history">
+                <h3>Recent Submissions</h3>
+                <div id="history-container">
+                    <!-- History will be populated here -->
+                </div>
+            </div>
+        </section>
+
+        <section id="login-prompt" class="hidden">
+            <h2>Please Log In</h2>
+            <p>You need to be logged in to view your profile.</p>
+            <button onclick="window.location.href='index.html'">Back to Home</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 GameStats Leaderboard</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+    <script src="app.js"></script>
+    <script src="profile.js"></script>
+</body>
+</html> 

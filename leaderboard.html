@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameStats - Leaderboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">GameStats</div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="leaderboard.html">Leaderboard</a>
+                <a href="profile.html" id="profile-link" class="hidden">Profile</a>
+                <div class="nav-right">
+                    <button id="theme-toggle" class="theme-toggle">
+                        <span class="light-icon">🌞</span>
+                        <span class="dark-icon">🌙</span>
+                    </button>
+                    <div id="auth-buttons">
+                        <button id="login-btn">Login</button>
+                        <button id="signup-btn">Sign Up</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Leaderboard Section -->
+        <section id="leaderboard">
+            <h2>Leaderboard</h2>
+            <div class="leaderboard-filters">
+                <select id="game-select">
+                    <option value="all">🎮 All Games</option>
+                    <option value="wordle">📝 Wordle</option>
+                    <option value="worldle">🌍 Worldle</option>
+                    <option value="travle">✈️ Travle</option>
+                    <option value="whentaken">📅 WhenTaken</option>
+                    <option value="wheretaken">🌎 WhereTaken</option>
+                    <option value="wheretaken-us">🦅 WhereTaken US</option>
+                    <option value="flagle">🎌 Flagle</option>
+                    <option value="geogrid">🗺️ GeoGrid</option>
+                    <option value="angle">📐 Angle</option>
+                    <option value="minecraftle">⛏️ Minecraftle</option>
+                    <option value="foodguessr">🍽️ FoodGuessr</option>
+                </select>
+                <select id="time-period">
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                    <option value="all-time">All Time</option>
+                </select>
+            </div>
+            <div id="leaderboard-content">
+                <!-- Leaderboard data will be populated here -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 GameStats Leaderboard</p>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email:</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password:</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Sign Up</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="signup-email">Email:</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password:</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-username">Username:</label>
+                    <input type="text" id="signup-username" required>
+                </div>
+                <button type="submit">Sign Up</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+    <script src="app.js"></script>
+    <script src="leaderboard.js"></script>
+</body>
+</html> 
