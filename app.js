@@ -21,6 +21,7 @@ const profileLink = document.getElementById('profile-link')
 // Add near the top with other initialization code
 function initializeTheme() {
     const themeToggle = document.getElementById('theme-toggle');
+    // Change default theme to dark
     const savedTheme = localStorage.getItem('theme') || 'dark';
     
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -923,14 +924,34 @@ function updateAuthUI(isAuthenticated) {
     }
 }
 
+// Initialize auth state
+async function initializeAuth() {
+    try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+            console.error('Error getting session:', error);
+            return false;
+        }
+        return !!session;
+    } catch (error) {
+        console.error('Error initializing auth:', error);
+        return false;
+    }
+}
+
 // Add function to check initial auth state
 async function checkInitialAuthState() {
-    const { data: { session } } = await supabase.auth.getSession()
-    updateAuthUI(!!session)
+    const isAuthenticated = await initializeAuth();
+    updateAuthUI(isAuthenticated);
 }
 
 // Update the auth state change listener
 supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN') {
+        localStorage.setItem('supabase.auth.token', session.access_token);
+    } else if (event === 'SIGNED_OUT') {
+        localStorage.removeItem('supabase.auth.token');
+    }
     updateAuthUI(!!session)
     
     if (session) {
@@ -945,6 +966,8 @@ async function handleLogout() {
         const { error } = await supabase.auth.signOut()
         if (error) throw error
         
+        // Clear auth data
+        localStorage.removeItem('supabase.auth.token');
         updateAuthUI(false)
         window.location.href = 'index.html'
     } catch (error) {
@@ -1106,20 +1129,21 @@ function isNewDay(lastSubmitDate) {
     return lastSubmit < today;
 }
 
-// Update checkSubmittedGames to use the new function
+// Update checkSubmittedGames to use getUserDate() for timezone-aware date checking
 async function checkSubmittedGames() {
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
+        // Get today's date in user's timezone
         const today = await getUserDate();
         
         // Get today's submissions
         const { data, error } = await supabase
             .from('scores')
-            .select('game')
+            .select('game, date')  // Add date to selection
             .eq('user_id', user.id)
-            .eq('date', today);
+            .eq('date', today);    // Filter by today's date in user's timezone
 
         if (error) throw error;
 
@@ -1131,12 +1155,16 @@ async function checkSubmittedGames() {
 
         // Update UI for each game
         document.querySelectorAll('.game-card').forEach(card => {
-            const pasteBtn = card.querySelector('.paste-btn');
-            if (!pasteBtn || pasteBtn.classList.contains('info-card')) return;
+            const pasteBtn = card.querySelector('.paste-btn');  // Update selector to be more specific
+            if (!pasteBtn || card.classList.contains('info-card')) return;
 
-            const game = pasteBtn.getAttribute('onclick').match(/pasteFromClipboard\('(.+?)'\)/)[1];
+            const game = pasteBtn.getAttribute('onclick')?.match(/pasteFromClipboard\('(.+?)'\)/)?.[1];
+            if (!game) return;
             
-            if (data.some(entry => entry.game === game)) {
+            // Check if this game has been submitted today
+            const isSubmittedToday = data.some(entry => entry.game === game && entry.date === today);
+            
+            if (isSubmittedToday) {
                 pasteBtn.disabled = true;
                 pasteBtn.classList.add('submitted');
                 pasteBtn.textContent = '✓ Submitted';
@@ -1152,8 +1180,17 @@ async function checkSubmittedGames() {
     }
 }
 
-// Call checkSubmittedGames more frequently
-setInterval(checkSubmittedGames, 30000); // Check every 30 seconds 
+// Update the interval to check more frequently around midnight
+function setupSubmissionCheck() {
+    // Initial check
+    checkSubmittedGames();
+
+    // Check every minute
+    setInterval(checkSubmittedGames, 60000);
+}
+
+// Call this function when initializing the app
+setupSubmissionCheck();
 
 // Add this function to calculate global rank for a user
 async function calculateGlobalRank(userId) {

@@ -162,6 +162,10 @@ section {
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
     margin-top: 1rem;
+    background-color: var(--card-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
 }
 
 .game-card {
@@ -604,16 +608,14 @@ tr:hover {
 
 /* Dark Theme Variables (now default) */
 :root {
-    --bg-color: #121212;
     --text-color: #ffffff;
-    --card-bg: #1e1e1e;
     --border-color: #333333;
     --input-bg: #2d2d2d;
     --input-border: #404040;
     --table-header-bg: #1e1e1e;
     --table-hover: #2d2d2d;
     --modal-overlay: rgba(0, 0, 0, 0.8);
-    --section-bg: #1e1e1e;
+    --section-bg: #252525;
     --section-shadow: rgba(0, 0, 0, 0.3);
     --button-bg: #7757AB;
     --button-hover: #624890;
@@ -1380,18 +1382,16 @@ section > h2:first-child,
     margin: 0 auto;
     border: 1px solid var(--border-color);
     margin-bottom: 2rem;
-    background-color: transparent;
+    background-color: var(--card-bg);
 }
 
 .leaderboard-section table {
     width: 100%;
     border-collapse: collapse;
     margin: 0;
-    background-color: transparent;
 }
 
 .leaderboard-section th {
-    background-color: transparent;
     padding: 1.2rem 1rem;
     font-weight: 600;
     color: var(--text-color);
@@ -1498,7 +1498,7 @@ header:not(:has(.leaderboard-nav)) nav {
     margin: 0 auto;
     border: 1px solid var(--border-color);
     margin-bottom: 2rem;
-    background-color: transparent;
+    background-color: var(--card-bg);
 }
 
 .leaderboard-section h2 {
@@ -1564,7 +1564,7 @@ header:not(:has(.leaderboard-nav)) nav {
     border-radius: 8px;
     margin-top: 2rem;
     border: 1px solid var(--border-color);
-    background-color: transparent;
+    background-color: var(--card-bg);
 }
 
 .charts-grid {
@@ -1639,4 +1639,15 @@ header:not(:has(.leaderboard-nav)) nav {
     --text-color: #333333;
     --border-color: #e0e0e0;
     --section-shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* Add styles for the container backgrounds */
+.games-grid,
+.charts-grid,
+.leaderboard-section,
+.analytics-section {
+    background-color: var(--card-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
 } 

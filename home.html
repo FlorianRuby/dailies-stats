@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Games Leaderboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .us-icon {
+            height: 1em;
+            width: auto;
+            vertical-align: middle;
+            margin-right: 0.2em;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-links">
+                <a href="home.html">Home</a>
+                <a href="leaderboard.html">Leaderboard</a>
+                <a href="profile.html" id="profile-link" class="hidden">Profile</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Game Score Submission Section -->
+        <section id="score-submission" class="hidden">
+            <h2>Submit Today's Scores</h2>
+            <div class="games-grid">
+                <div class="game-card info-card">
+                    <h3>⏰ Games Reset In</h3>
+                    <div class="info-value" id="countdown-time">--h --m</div>
+                    <div class="info-label">until midnight local time</div>
+                </div>
+                <div class="game-card info-card">
+                    <h3>📊 Today's Progress</h3>
+                    <div class="info-value" id="today-submissions">0/14</div>
+                    <div class="info-label">games submitted today</div>
+                </div>
+                <div class="game-card">
+                    <h3>📝 Wordle</h3>
+                    <a href="https://www.nytimes.com/games/wordle/index.html" target="_blank" class="game-link">Play Game</a>
+                    <button onclick="pasteFromClipboard('wordle')" class="paste-btn">📋 Paste Score</button>
+                </div>
+                <div class="game-card">
+                    <h3>🌍 Worldle</h3>
+                    <a href="https://worldle.teuteuf.fr/" target="_blank" class="game-link">Play Game</a>
+                    <button onclick="pasteFromClipboard('worldle')" class="paste-btn">📋 Paste Score</button>
+                </div>
+                <div class="game-card">
+                    <h3>🎌 Flagle</h3>
+                    <a href="https://www.flagle.io/" target="_blank" class="game-link">Play Game</a>
+                    <button onclick="pasteFromClipboard('flagle')" class="paste-btn">📋 Paste Score</button>
+                </div>
+                <div class="game-card">
+                    <h3>✈️ Travle</h3>
+                    <a href="https://travle.earth/" target="_blank" class="game-link">Play Game</a>
+                    <button onclick="pasteFromClipboard('travle')" class="paste-btn">📋 Paste Score</button>
+                </div>
+                <div class="game-card">
+                    <h3>📅 WhenTaken</h3>
+                    <a href="https://whentaken.com/" target="_blank" class="game-link">Play Game</a>
+                    <button onclick="pasteFromClipboard('whentaken')" class="paste-btn">📋 Paste Score</button>
+                </div>
+                <div class="game-card">
+                    <h3>🌎 WhereTaken</h3>
+                    <a href="https://wheretaken.teuteuf.fr/" target="_blank" class="game-link">Play Game</a>
+                    <button onclick="pasteFromClipboard('wheretaken')" class="paste-btn">📋 Paste Score</button>
+                </div>
+                <div class="game-card">
+                    <h3>🦅 WhereTaken US</h3>
+                    <a href="https://wheretakenusa.teuteuf.fr/" target="_blank" class="game-link">Play Game</a>
+                    <button onclick="pasteFromClipboard('wheretaken-us')" class="paste-btn">📋 Paste Score</button>
+                </div>
+                <div class="game-card">
+                    <h3>🗺️ GeoGrid</h3>
+                    <a href="https://www.geogridgame.com/" target="_blank" class="game-link">Play Game</a>
+                    <button onclick="pasteFromClipboard('geogrid')" class="paste-btn">📋 Paste Score</button>
+                </div>
+                <div class="game-card">
+                    <h3>📐 Angle</h3>
+                    <a href="https://angle.wtf" target="_blank" class="game-link">Play Game</a>
+                    <button onclick="pasteFromClipboard('angle')" class="paste-btn">📋 Paste Score</button>
+                </div>
+                <div class="game-card">
+                    <h3>⛏️ Minecraftle</h3>
+                    <a href="https://minecraftle.zachmanson.com/" target="_blank" class="game-link">Play Game</a>
+                    <button onclick="pasteFromClipboard('minecraftle')" class="paste-btn">📋 Paste Score</button>
+                </div>
+                <div class="game-card">
+                    <h3>🍽️ FoodGuessr</h3>
+                    <a href="https://foodguessr.com/" target="_blank" class="game-link">Play Game</a>
+                    <button onclick="pasteFromClipboard('foodguessr')" class="paste-btn">📋 Paste Score</button>
+                </div>
+                <div class="game-card">
+                    <h3>🧇 Waffle</h3>
+                    <a href="https://wafflegame.net/" target="_blank" class="game-link">Play Game</a>
+                    <button onclick="pasteFromClipboard('waffle')" class="paste-btn">📋 Paste Score</button>
+                </div>
+                <div class="game-card">
+                    <h3>🌍 Globle</h3>
+                    <a href="https://globle-game.com" target="_blank" class="game-link">Play Game</a>
+                    <button onclick="pasteFromClipboard('globle')" class="paste-btn">📋 Paste Score</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
