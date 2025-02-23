@@ -110,27 +110,37 @@ function initializeUI() {
 
 // Handle login
 async function handleLogin(e) {
-    e.preventDefault()
-    const email = document.getElementById('login-email').value
-    const password = document.getElementById('login-password').value
+    e.preventDefault();
+    const emailOrUsername = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
     
     try {
-        console.log('Attempting to login...')
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        })
-        if (error) throw error
+        // First try to find user by username
+        const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('email')
+            .eq('username', emailOrUsername)
+            .single();
         
-        console.log('Login successful:', data)
-        loginModal.classList.add('hidden')
-        updateAuthUI(true)
-        if (scoreSubmission) showScoreSubmission()
-        if (leaderboardContent) updateLeaderboard()
-        window.location.href = 'profile.html'
+        // Determine email to use for login
+        const loginEmail = userData?.email || emailOrUsername;
+        
+        // Attempt login
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: loginEmail,
+            password,
+        });
+
+        if (error) throw error;
+        
+        loginModal.classList.add('hidden');
+        updateAuthUI(true);
+        if (scoreSubmission) showScoreSubmission();
+        if (leaderboardContent) updateLeaderboard();
+        window.location.href = 'profile.html';
     } catch (error) {
-        console.error('Login error:', error)
-        alert(error.message)
+        console.error('Login error:', error);
+        alert('Invalid username/email or password');
     }
 }
 
@@ -696,7 +706,10 @@ async function updateLeaderboard() {
             `)
             .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+            console.error('Error fetching scores:', error);
+            return;
+        }
 
         if (selectedGame === 'global') {
             // Calculate global averages
@@ -791,7 +804,7 @@ function displayGlobalLeaderboard(data) {
                     <tr>
                         <td>${index + 1}</td>
                         <td class="player-cell">
-                            <img src="${user.avatar_url || 'default-avatar.png'}" 
+                            <img src="${user.avatar_url || './assets/default_user_avatar.jpg'}" 
                                  alt="${user.username}" 
                                  class="leaderboard-avatar">
                             ${user.username}
@@ -820,7 +833,7 @@ function displayGameLeaderboard(data, game) {
                     <tr>
                         <td>${index + 1}</td>
                         <td class="player-cell">
-                            <img src="${user.avatar_url || 'default-avatar.png'}" 
+                            <img src="${user.avatar_url || './assets/default_user_avatar.jpg'}" 
                                  alt="${user.username}" 
                                  class="leaderboard-avatar">
                             ${user.username}

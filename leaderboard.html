@@ -100,6 +100,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
     <script src="app.js"></script>
+    <script>
+        // Initialize UI after app.js is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeUI();
+        });
+    </script>
     <script src="leaderboard.js"></script>
 </body>
 </html> 

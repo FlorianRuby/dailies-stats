@@ -452,11 +452,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 .single();
             
             if (error) throw error;
-            if (data?.avatar_url) {
-                profilePicture.src = data.avatar_url;
-            }
+            
+            // Set the profile picture source with fallback
+            profilePicture.src = data?.avatar_url || './assets/default_user_avatar.jpg';
+            
         } catch (error) {
             console.error('Error loading profile picture:', error);
+            // Set default avatar on error
+            profilePicture.src = './assets/default_user_avatar.jpg';
         }
     }
 

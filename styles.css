@@ -18,9 +18,10 @@ body {
 
 /* Header Styles */
 header {
-    background-color: transparent;
-    color: var(--text-color);
-    padding: 0.75rem 1rem;
+    background-color: var(--card-bg);
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2rem;
 }
 
 nav {
@@ -28,50 +29,98 @@ nav {
     margin: 0 auto;
     display: flex;
     justify-content: center;
-    position: relative;
+    align-items: center;
+    padding: 0 1rem;
 }
 
 .nav-links {
     display: flex;
-    gap: 2rem;
+    gap: 3rem;
     align-items: center;
-    justify-content: center;
-    width: fit-content;
-    margin: 0 auto;
 }
 
 .nav-links a {
-    color: #7757AB;
+    color: var(--text-color);
     text-decoration: none;
-    font-size: 1.6rem;
-    font-weight: 550;
+    font-size: 1.1rem;
+    font-weight: 500;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+    position: relative;
 }
 
 .nav-links a:hover {
-    opacity: 0.8;
+    opacity: 1;
+    color: var(--accent-color);
 }
 
-/* Remove old logo styles */
-.logo {
-    display: none;
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background-color: var(--accent-color);
+    transition: width 0.2s ease;
 }
 
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* Update auth buttons in header */
 #auth-buttons {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
+    margin-left: 3rem;
 }
 
-button {
-    padding: 0.5rem 1rem;
+#auth-buttons button {
+    color: var(--text-color);
+    background: none;
     border: none;
-    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+    padding: 0.5rem 1rem;
     cursor: pointer;
-    background-color: #4CAF50;
-    color: white;
 }
 
-button:hover {
-    background-color: #45a049;
+#auth-buttons button:hover {
+    opacity: 1;
+    color: var(--accent-color);
+}
+
+#login-btn {
+    position: relative;
+}
+
+#login-btn::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background-color: var(--accent-color);
+    transition: width 0.2s ease;
+}
+
+#login-btn:hover::after {
+    width: 100%;
+}
+
+#signup-btn {
+    background-color: var(--accent-color) !important;
+    color: white !important;
+    border-radius: 4px;
+    opacity: 1 !important;
+}
+
+#signup-btn:hover {
+    background-color: var(--button-hover) !important;
 }
 
 /* Main Content Styles */

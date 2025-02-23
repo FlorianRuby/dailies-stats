@@ -1,14 +1,20 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const gameSelect = document.getElementById('game-select')
-    const timePeriod = document.getElementById('time-period')
+document.addEventListener('DOMContentLoaded', async () => {
+    // Get necessary DOM elements with null checks
+    const leaderboardContent = document.getElementById('leaderboard-content');
+    const gameSelect = document.getElementById('game-select');
 
-    // Add event listeners for filters
-    gameSelect.addEventListener('change', updateLeaderboard)
-    timePeriod.addEventListener('change', updateLeaderboard)
+    // Only add event listeners if elements exist
+    if (gameSelect) {
+        gameSelect.addEventListener('change', () => {
+            updateLeaderboard();
+        });
+    }
 
-    // Initial load of leaderboard
-    updateLeaderboard()
-})
+    // Initial leaderboard load - with a slight delay to ensure auth is initialized
+    setTimeout(() => {
+        updateLeaderboard();
+    }, 100);
+});
 
 // Add any leaderboard-specific functionality here
 // The main leaderboard functionality is already in app.js 
