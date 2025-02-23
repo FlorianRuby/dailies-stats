@@ -18,33 +18,42 @@ body {
 
 /* Header Styles */
 header {
-    background-color: #333;
-    color: white;
-    padding: 1rem;
+    background-color: transparent;
+    color: var(--text-color);
+    padding: 0.75rem 1rem;
 }
 
 nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     max-width: 1200px;
     margin: 0 auto;
-}
-
-.logo {
-    font-size: 1.5rem;
-    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    position: relative;
 }
 
 .nav-links {
     display: flex;
     gap: 2rem;
     align-items: center;
+    justify-content: center;
+    width: fit-content;
+    margin: 0 auto;
 }
 
 .nav-links a {
-    color: white;
+    color: #7757AB;
     text-decoration: none;
+    font-size: 1.6rem;
+    font-weight: 550;
+}
+
+.nav-links a:hover {
+    opacity: 0.8;
+}
+
+/* Remove old logo styles */
+.logo {
+    display: none;
 }
 
 #auth-buttons {
@@ -68,17 +77,19 @@ button:hover {
 /* Main Content Styles */
 main {
     flex: 1;
-    max-width: 1200px;
-    margin: 2rem auto;
+    max-width: 1050px;
+    margin: 1rem auto;
     padding: 0 1rem;
+    width: 100%;
 }
 
 section {
-    background-color: white;
-    padding: 2rem;
+    background-color: var(--section-bg);
+    box-shadow: 0 2px 4px var(--section-shadow);
+    color: var(--text-color);
     border-radius: 8px;
+    padding: 2rem;
     margin-bottom: 2rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .hidden {
@@ -102,11 +113,7 @@ section {
     flex-direction: column;
     gap: 1rem;
     align-items: center;
-}
-
-.game-card h3 {
-    margin: 0;
-    font-size: 1.2rem;
+    border-radius: 8px;
 }
 
 .paste-btn {
@@ -117,6 +124,7 @@ section {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    border-radius: 4px;
 }
 
 .game-card button:not(.paste-btn) {
@@ -128,6 +136,7 @@ section {
     width: 100%;
     text-align: center;
     padding: 0.5rem;
+    border-radius: 4px;
 }
 
 /* Leaderboard Styles */
@@ -149,6 +158,7 @@ select {
 }
 
 /* Footer Styles */
+/* Remove these footer styles */
 footer {
     margin-top: auto;
     text-align: center;
@@ -161,13 +171,14 @@ footer {
 /* Add these styles at the end of your styles.css file */
 table {
     width: 100%;
+    min-width: 600px;
     border-collapse: collapse;
     margin-top: 1rem;
     border-color: #eee;
 }
 
 th, td {
-    padding: 0.75rem;
+    padding: 0.75rem 1rem;
     text-align: left;
     border-bottom: 1px solid #ddd;
     border-color: #eee;
@@ -214,39 +225,176 @@ tr:hover {
     border-radius: 4px;
 }
 
-/* Profile Styles */
-.profile-info {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 2rem;
-    margin-bottom: 2rem;
+
+.settings-link {
+    color: var(--text-color);
+    opacity: 0.7;
+    text-decoration: underline;
+    font-size: 0.9rem;
+    line-height: 0.8;
+    display: inline-block;
 }
 
-.user-details, .user-stats {
-    background-color: #fff;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+.edit-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    opacity: 0.8;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
 }
 
-.game-history {
-    background-color: #fff;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.edit-btn:hover {
+    opacity: 1;
+}
+
+.recent-submissions h3,
+.stats-section h3 {
+    color: var(--text-color);
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+/* Recent submissions styles */
+#history-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background-color: var(--card-bg);
+    padding: 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    height: 100%;
+    max-height: 804px;
+    overflow-y: auto;
+    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+#history-container::-webkit-scrollbar {
+    display: none;
+}
+
+.history-date-group {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.history-date-group:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.history-date-header {
+    color: var(--text-color);
+    opacity: 0.7;
+    font-size: 0.9em;
+    margin-bottom: 0.5rem;
 }
 
 .history-entry {
+    position: relative;
+    overflow: hidden;
     display: flex;
-    justify-content: space-between;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #eee;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem;
+    font-size: 0.9em;
+    border-radius: 4px;
+}
+
+.history-entry:hover {
+    background: linear-gradient(
+        to bottom right,
+        var(--card-bg),
+        rgba(119, 87, 171, 0.03)
+    );
+}
+
+.history-entry:last-child {
+    border-bottom: none;
+}
+
+.history-entry .game-name {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.history-entry .score {
+    font-weight: bold;
+}
+
+/* Stats grid styles */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    flex: 1;
+}
+
+.game-stat, .general-stats-card {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    padding: 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.glow-effect {
+    pointer-events: none;
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle at center,
+        rgba(119, 87, 171, 0.08) 0%,
+        rgba(119, 87, 171, 0.05) 35%,
+        rgba(119, 87, 171, 0) 70%);
+    border-radius: 50%;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: screen;
+    z-index: 1;
+    filter: blur(10px);
+    transition: opacity 0.1s ease;
+}
+
+.game-stat:hover, .general-stats-card:hover {
+    background: linear-gradient(
+        to bottom right,
+        var(--card-bg),
+        rgba(119, 87, 171, 0.03)
+    );
 }
 
 .game-stat {
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #eee;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    padding: 0.8rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.game-stat h4 {
+    margin: 0;
+    margin-bottom: 0.3rem;
+}
+
+.game-stat p {
+    margin: 0;
+    font-size: 0.9em;
+    color: var(--text-color);
+    opacity: 0.8;
+    line-height: 1.3;
 }
 
 #login-prompt {
@@ -254,34 +402,50 @@ tr:hover {
     padding: 3rem;
 }
 
-/* Modal Styles */
+/* Modal styles */
 .modal {
-    display: none;
+    display: flex;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 1000;
-}
-
-.modal.show {
-    display: flex;
+    background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
     z-index: 1000;
 }
 
+.modal.hidden {
+    display: none;
+}
+
 .modal-content {
-    background-color: white;
+    background-color: var(--bg-color);
     padding: 2rem;
     border-radius: 8px;
-    width: 100%;
-    max-width: 400px;
     position: relative;
-    z-index: 1001;
-    color: #333333;
+    width: 90%;
+    max-width: 400px;
+}
+
+.modal-content h2 {
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modal-content input {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
 }
 
 .close {
@@ -290,36 +454,14 @@ tr:hover {
     top: 0.5rem;
     font-size: 1.5rem;
     cursor: pointer;
+    color: var(--text-color);
 }
 
-.form-group {
-    margin-bottom: 1rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-
-.hidden {
-    display: none;
+.close:hover {
+    opacity: 0.7;
 }
 
 /* Add these styles */
-.profile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-}
-
 .danger-btn {
     background-color: #dc3545;
 }
@@ -396,43 +538,44 @@ tr:hover {
     }
 }
 
-/* Dark mode variables */
+/* Dark Theme Variables (now default) */
 :root {
-    --bg-color: #ffffff;
-    --text-color: #333333;
-    --card-bg: #ffffff;
-    --border-color: #eee;
-    --input-bg: #ffffff;
-    --input-border: #ddd;
-    --header-bg: #333;
-    --header-text: #ffffff;
-    --table-header-bg: #f5f5f5;
-    --table-hover: #f9f9f9;
-    --modal-overlay: rgba(0, 0, 0, 0.5);
-    --section-bg: #ffffff;
-    --section-shadow: rgba(0, 0, 0, 0.1);
-    --button-bg: #4CAF50;
-    --button-hover: #45a049;
-    --link-color: #4CAF50;
-}
-
-[data-theme="dark"] {
     --bg-color: #121212;
     --text-color: #ffffff;
     --card-bg: #1e1e1e;
     --border-color: #333333;
     --input-bg: #2d2d2d;
     --input-border: #404040;
-    --header-bg: #000000;
-    --header-text: #ffffff;
     --table-header-bg: #1e1e1e;
     --table-hover: #2d2d2d;
     --modal-overlay: rgba(0, 0, 0, 0.8);
     --section-bg: #1e1e1e;
     --section-shadow: rgba(0, 0, 0, 0.3);
-    --button-bg: #2e7d32;
-    --button-hover: #1b5e20;
-    --link-color: #6dba71;
+    --button-bg: #7757AB;
+    --button-hover: #624890;
+    --link-color: #9779CD;
+    --accent-color: #7757AB;
+}
+
+/* Light Theme Variables */
+[data-theme="light"] {
+    --bg-color: #f1f1f1;
+    --text-color: #333333;
+    --card-bg: #f8f8f8;
+    --border-color: #eee;
+    --input-bg: #f1f1f1;
+    --input-border: #b8b8b8;
+    --header-bg: #333;
+    --header-text: #f1f1f1;
+    --table-header-bg: #f5f5f5;
+    --table-hover: #f9f9f9;
+    --modal-overlay: rgba(0, 0, 0, 0.5);
+    --section-bg: #f1f1f1;
+    --section-shadow: rgba(0, 0, 0, 0.1);
+    --button-bg: #7757AB;
+    --button-hover: #624890;
+    --link-color: #7757AB;
+    --accent-color: #7757AB;
 }
 
 /* Update base styles */
@@ -446,6 +589,8 @@ section {
     background-color: var(--section-bg);
     box-shadow: 0 2px 4px var(--section-shadow);
     color: var(--text-color);
+    border-radius: 8px;
+    padding: 2rem;
 }
 
 /* Game card styles */
@@ -458,6 +603,7 @@ section {
     flex-direction: column;
     gap: 1rem;
     align-items: center;
+    border-radius: 8px;
 }
 
 .game-card h3 {
@@ -465,15 +611,6 @@ section {
     font-size: 1.2rem;
 }
 
-.paste-btn {
-    width: 100%;
-    padding: 0.8rem;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
 
 .game-card button:not(.paste-btn) {
     width: 100%;
@@ -484,6 +621,7 @@ section {
     width: 100%;
     text-align: center;
     padding: 0.5rem;
+    border-radius: 4px;
 }
 
 /* Input styles */
@@ -543,8 +681,8 @@ tr:hover {
 
 /* Header and footer */
 header, footer {
-    background-color: var(--header-bg);
-    color: var(--header-text);
+    background-color: transparent;
+    color: var(--text-color);
 }
 
 /* Form elements */
@@ -564,37 +702,649 @@ header, footer {
     color: white;
 }
 
-/* Theme toggle */
+/* Update theme toggle styles */
 .theme-toggle {
     background: none;
-    border: none;
-    color: var(--header-text);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.theme-toggle:hover {
+    background-color: var(--button-bg);
+}
+
+.theme-toggle .light-icon,
+[data-theme="dark"] .theme-toggle .dark-icon {
+    display: none;
+}
+
+.theme-toggle .dark-icon,
+[data-theme="dark"] .theme-toggle .light-icon {
+    display: block;
 }
 
 .nav-right {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     align-items: center;
     gap: 1rem;
 }
 
-/* Theme toggle button styles */
-.theme-toggle {
+.profile-picture-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+#profile-picture {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--border-color);
+}
+
+#change-picture-btn {
+    width: auto;
+}
+
+/* Leaderboard avatar styles */
+.player-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.leaderboard-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}
+
+/* Add styles for the leaderboard section */
+#leaderboard {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Profile Section Styles */
+#profile-section {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 8px;
+    color: var(--text-color);
+    max-width: 1050px;
+    margin: 0 auto;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.profile-info h2 {
+    color: #7757AB;
+    font-size: 2.5rem;
+    margin: 0;
+    line-height: 0.9;
+}
+
+.profile-info p {
+    color: var(--text-color);
+    opacity: 0.7;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 0.9;
+    margin-top: -1rem;
+    margin-bottom: 0.2rem;
+}
+
+.profile-avatar {
+    width: 53px;
+    height: 53px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.edit-btn {
     background: none;
     border: none;
+    color: #666;
+    opacity: 0.8;
+    text-decoration: underline;
     cursor: pointer;
-    font-size: 1.5rem;
+    padding: 0;
+    font-size: 0.9rem;
+}
+
+.edit-btn:hover {
+    opacity: 1;
+}
+
+.profile-content {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: 2rem;
+    min-height: calc(100vh - 265px); /* Adjusted to be shorter */
+}
+
+.recent-submissions h3,
+.stats-section h3 {
+    color: var(--text-color);
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+/* Recent submissions styles */
+#history-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background-color: var(--card-bg);
+    padding: 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    height: 100%;
+    max-height: 700px; /* Updated to match stacked boxes height */
+    overflow-y: auto;
+}
+
+.history-date-group {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.history-date-group:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.history-date-header {
+    color: var(--text-color);
+    opacity: 0.7;
+    font-size: 0.9em;
+    margin-bottom: 0.5rem;
+}
+
+.history-entry {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     padding: 0.5rem;
-    color: var(--header-text);
+    font-size: 0.9em;
+    border-radius: 4px;
 }
 
-.theme-toggle .dark-icon {
+.history-entry:hover {
+    background: linear-gradient(
+        to bottom right,
+        var(--card-bg),
+        rgba(119, 87, 171, 0.03)
+    );
+}
+
+.history-entry:last-child {
+    border-bottom: none;
+}
+
+.history-entry .game-name {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.history-entry .score {
+    font-weight: bold;
+}
+
+/* Stats grid styles */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    flex: 1;
+}
+
+.game-stat {
+    background-color: var(--card-bg);
+    padding: 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.game-stat h4 {
+    margin: 0;
+    margin-bottom: 0.5rem;
+}
+
+.game-stat p {
+    margin: 0;
+    font-size: 0.9em;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+/* Dark theme variables */
+[data-theme="dark"] {
+    --card-bg: #1e1e1e;
+    --text-color: #ffffff;
+    --border-color: #333333;
+}
+
+.profile-actions {
+    margin: 0;
+}
+
+.settings-link {
+    color: var(--text-color);
+    opacity: 0.7;
+    text-decoration: underline;
+    font-size: 0.9rem;
+    line-height: 0.9;
+}
+
+.settings-link:hover {
+    opacity: 1;
+}
+
+/* Remove logout button from nav */
+.nav-links #logout-btn {
     display: none;
 }
 
-[data-theme="dark"] .theme-toggle .light-icon {
+/* Update heading styles */
+h2 {
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+}
+
+h3 {
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+/* Update section header styles */
+section > h2:first-child,
+.welcome-section > h1,
+.leaderboard-section > h2,
+.submit-section > h2 {
+    color: var(--accent-color);
+    font-size: 2.5rem;  /* Match profile header size */
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+/* Keep other h2 styles separate */
+h2:not(section > h2:first-child):not(.welcome-section > h1):not(.leaderboard-section > h2):not(.submit-section > h2) {
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+}
+
+/* Style only the main section headers */
+section > h2:first-child,
+.welcome-section > h1,
+.leaderboard-section > h2,
+.submit-section > h2 {
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+}
+
+/* Keep game card headers and other content headers white */
+.game-card h3,
+.game-feature h3,
+.game-stat h4 {
+    color: var(--text-color);
+}
+
+/* Update general stats card styles */
+.general-stats-card {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    padding: 1.2rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+    gap: 0.75rem;
+    grid-row: span 2;
+}
+
+.stat-item {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-bottom: 0.2rem;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-color);
+    opacity: 0.7;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Update game stat card styles */
+.game-stat {
+    background-color: var(--card-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+/* Update stats container layout */
+#stats-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+/* Add media query for smaller screens */
+@media (max-width: 1024px) {
+    #stats-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .general-stats-card {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 768px) {
+    #stats-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .general-stats-card {
+        grid-row: span 1;
+    }
+}
+
+/* Add styles for info cards */
+.info-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: var(--card-bg);
+}
+
+.info-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    margin: 0.5rem 0;
+}
+
+.info-label {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+/* Add styles for submitted buttons */
+.paste-btn.submitted {
+    background-color: #9779CD;
+    cursor: not-allowed;
+}
+
+[data-theme="dark"] .paste-btn.submitted {
+    background-color: #624890;
+}
+
+.paste-btn:disabled {
+    opacity: 0.8;
+}
+
+/* Update button hover styles */
+.paste-btn:not(:disabled):hover {
+    background-color: var(--button-hover);
+}
+
+.paste-btn.submitted:hover {
+    background-color: #9779CD;
+}
+
+[data-theme="dark"] .paste-btn.submitted:hover {
+    background-color: #624890;
+}
+
+/* Update stats section to fill height */
+.stats-section {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Settings page styles */
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.back-link {
+    color: var(--text-color);
+    text-decoration: none;
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+
+.back-link:hover {
+    opacity: 1;
+}
+
+.settings-group {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.settings-group h3 {
+    margin: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+    color: var(--text-color);
+}
+
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.settings-item:last-child {
+    margin-bottom: 0;
+}
+
+.settings-item label {
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.setting-control {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.setting-control input[type="text"],
+.setting-control input[type="email"] {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+.setting-control input[disabled] {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.save-btn {
+    padding: 0.5rem 1rem;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.secondary-btn {
+    padding: 0.5rem 1rem;
+    background-color: var(--button-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.danger-zone {
+    border-color: #dc3545;
+}
+
+.danger-zone h3 {
+    color: #dc3545;
+}
+
+.danger-btn {
+    padding: 0.5rem 1rem;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.danger-btn:hover {
+    background-color: #c82333;
+}
+
+/* Move theme toggle styles to settings section */
+.settings-item .theme-toggle {
+    background: none;
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.settings-item .theme-toggle:hover {
+    background-color: var(--button-bg);
+}
+
+.settings-item .theme-toggle .light-icon,
+[data-theme="dark"] .settings-item .theme-toggle .dark-icon {
     display: none;
 }
 
-[data-theme="dark"] .theme-toggle .dark-icon {
+.settings-item .theme-toggle .dark-icon,
+[data-theme="dark"] .settings-item .theme-toggle .light-icon {
     display: block;
+}
+
+/* Update auth buttons in header */
+#auth-buttons button {
+    font-size: 1.3rem;
+    color: #7757AB;
+    background: none;
+    border: none;
+    text-decoration: none;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+}
+
+#auth-buttons button:hover {
+    opacity: 0.8;
+}
+
+/* Leaderboard table styles */
+.leaderboard-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.leaderboard-section th,
+.leaderboard-section td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.leaderboard-section th {
+    background-color: var(--table-header-bg);
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.leaderboard-section tr:last-child td {
+    border-bottom: none;
+}
+
+.leaderboard-section tr:hover {
+    background-color: var(--table-hover);
+}
+
+/* Game select dropdown styling */
+.leaderboard-filters {
+    margin-bottom: 1rem;
+}
+
+#game-select {
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    font-size: 1rem;
+    width: 200px;
 } 

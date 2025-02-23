@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameStats - Settings</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="leaderboard.html">Leaderboard</a>
+                <a href="profile.html" id="profile-link">Profile</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="settings-section">
+            <div class="settings-header">
+                <h2>Settings</h2>
+                <a href="profile.html" class="back-link">← Back to profile</a>
+            </div>
+
+            <div class="settings-content">
+                <div class="settings-group">
+                    <h3>Appearance</h3>
+                    <div class="settings-item">
+                        <label>Theme</label>
+                        <div class="setting-control">
+                            <button id="theme-toggle" class="theme-toggle">
+                                <i class="fas fa-sun light-icon"></i>
+                                <i class="fas fa-moon dark-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h3>Profile</h3>
+                    <div class="settings-item">
+                        <label for="username">Username</label>
+                        <div class="setting-control">
+                            <input type="text" id="username" value="">
+                            <button id="save-username" class="save-btn">Save</button>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <label>Profile Picture</label>
+                        <div class="setting-control">
+                            <input type="file" id="picture-upload" accept="image/*" class="hidden">
+                            <button id="change-picture-btn" class="secondary-btn">Change Picture</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h3>Account</h3>
+                    <div class="settings-item">
+                        <label>Email</label>
+                        <div class="setting-control">
+                            <input type="email" id="email" disabled>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <label>Password</label>
+                        <div class="setting-control">
+                            <button id="change-password" class="secondary-btn">Change Password</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-group danger-zone">
+                    <h3>Danger Zone</h3>
+                    <div class="settings-item">
+                        <label>Delete Account</label>
+                        <div class="setting-control">
+                            <button id="delete-account" class="danger-btn">Delete Account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+    <script src="app.js"></script>
+    <script src="settings.js"></script>
+</body>
+</html> 

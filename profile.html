@@ -5,19 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GameStats - Profile</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <header>
         <nav>
-            <div class="logo">GameStats</div>
             <div class="nav-links">
                 <a href="index.html">Home</a>
                 <a href="leaderboard.html">Leaderboard</a>
                 <a href="profile.html" id="profile-link">Profile</a>
-                <div id="auth-buttons">
-                    <button id="login-btn">Login</button>
-                    <button id="signup-btn">Sign Up</button>
-                </div>
             </div>
         </nav>
     </header>
@@ -25,29 +21,29 @@
     <main>
         <section id="profile-section">
             <div class="profile-header">
-                <h2>Your Profile</h2>
-                <button id="logout-btn" class="danger-btn">Logout</button>
-            </div>
-            <div class="profile-info">
-                <div class="user-details">
-                    <h3>Account Information</h3>
-                    <p>Email: <span id="user-email"></span></p>
-                    <p>Username: <span id="user-username"></span></p>
-                    <button id="edit-username-btn">Edit Username</button>
-                </div>
-                
-                <div class="user-stats">
-                    <h3>Your Statistics</h3>
-                    <div id="stats-container">
-                        <!-- Stats will be populated here -->
+                <div class="profile-info">
+                    <h2><span id="user-username">[username]</span>'s Profile</h2>
+                    <p id="user-email">email@email.com</p>
+                    <div class="profile-actions">
+                        <a href="settings.html" class="settings-link">settings</a>
                     </div>
                 </div>
+                <img id="profile-picture" src="default-avatar.png" alt="Profile Picture" class="profile-avatar">
             </div>
-            
-            <div class="game-history">
-                <h3>Recent Submissions</h3>
-                <div id="history-container">
-                    <!-- History will be populated here -->
+
+            <div class="profile-content">
+                <div class="recent-submissions">
+                    <h3>Recent submissions</h3>
+                    <div id="history-container">
+                        <!-- History entries will be populated here -->
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <h3>Your stats</h3>
+                    <div id="stats-container" class="stats-grid">
+                        <!-- Stats will be populated here -->
+                    </div>
                 </div>
             </div>
         </section>
@@ -58,10 +54,6 @@
             <button onclick="window.location.href='index.html'">Back to Home</button>
         </section>
     </main>
-
-    <footer>
-        <p>&copy; 2024 GameStats Leaderboard</p>
-    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
     <script src="app.js"></script>

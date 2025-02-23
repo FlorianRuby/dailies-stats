@@ -21,17 +21,19 @@ const profileLink = document.getElementById('profile-link')
 // Add near the top with other initialization code
 function initializeTheme() {
     const themeToggle = document.getElementById('theme-toggle');
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    const savedTheme = localStorage.getItem('theme') || 'dark';
     
     document.documentElement.setAttribute('data-theme', savedTheme);
     
-    themeToggle.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-    });
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    }
 }
 
 // Initialize UI based on available elements
@@ -94,6 +96,16 @@ function initializeUI() {
 
     // Check initial auth state
     checkInitialAuthState()
+
+    // Start countdown timer
+    updateCountdown();
+    setInterval(updateCountdown, 1000); // Update every second
+
+    // Update submissions count
+    updateTodaySubmissions();
+
+    // Check submitted games when page loads
+    checkSubmittedGames();
 }
 
 // Handle login
@@ -373,6 +385,38 @@ function parseGeoGridShare(shareText) {
     return parseFloat((100 - (score / 10)).toFixed(1));
 }
 
+// Add this function with the other parser functions
+function parseWaffleShare(shareText) {
+    // Check if share text is provided
+    if (!shareText) return null;
+
+    // Try to find the score pattern (e.g., "#waffle1128 3/5")
+    const scoreMatch = shareText.match(/#waffle\d+ (\d|X)\/5/);
+    if (!scoreMatch) return null;
+
+    // Extract the score number
+    const scoreText = scoreMatch[1];
+    
+    // Return 0 for X (failed attempt) or the actual number
+    return scoreText === 'X' ? 0 : parseInt(scoreText);
+}
+
+// Add Globle parser function
+function parseGlobleShare(shareText) {
+    // Check if share text is provided
+    if (!shareText) return null;
+
+    // Try to find the score pattern (e.g., "⬜🟥🟥🟥🟩 = 5")
+    const scoreMatch = shareText.match(/[⬜🟥🟩]+ = (\d+)/);
+    if (!scoreMatch) return null;
+
+    // Extract the score number
+    const score = parseInt(scoreMatch[1]);
+    
+    // Return 11 for scores above 10 (failed attempts) or the actual number
+    return score > 10 ? 11 : score;
+}
+
 // Add the formatGameName function near the top with other utility functions
 function formatGameName(game) {
     switch(game) {
@@ -398,19 +442,43 @@ function formatGameName(game) {
             return '🗺️ GeoGrid'
         case 'foodguessr':
             return '🍽️ FoodGuessr'
+        case 'waffle':
+            return '🧇 Waffle'
+        case 'globle':
+            return '🌍 Globle'
         default:
             return game.charAt(0).toUpperCase() + game.slice(1)
     }
 }
 
-// Update the submitScore function to use the new toast
+// Helper function to get CEST date string
+function getCESTDate() {
+    const now = new Date();
+    // Convert to CEST (UTC+2)
+    const cest = new Date(now.getTime() + (2 * 60 * 60 * 1000));
+    return cest.toISOString().slice(0, 10);
+}
+
+// Update submitScore function's date check
 async function submitScore(game) {
     const scoreInput = document.getElementById(`${game}-score`)
     if (!scoreInput) return
     
     let score;
     
-    if (game === 'wordle') {
+    if (game === 'waffle') {
+        const shareText = scoreInput.value.trim();
+        score = parseWaffleShare(shareText);
+        
+        if (score === null) {
+            alert(`Please enter a valid ${formatGameName(game)} share text`);
+            return;
+        }
+        
+        if (score === 0) {
+            alert('Score recorded as a failed attempt');
+        }
+    } else if (game === 'wordle') {
         const shareText = scoreInput.value.trim();
         score = parseWordleShare(shareText);
         
@@ -479,6 +547,18 @@ Total score: 11,500 / 15,000`);
         if (score === 11) {
             alert('Score recorded as a failed attempt');
         }
+    } else if (game === 'globle') {
+        const shareText = scoreInput.value.trim();
+        score = parseGlobleShare(shareText);
+        
+        if (score === null) {
+            alert(`Please enter a valid ${formatGameName(game)} share text`);
+            return;
+        }
+        
+        if (score === 11) {
+            alert('Score recorded as a failed attempt');
+        }
     } else {
         alert(`Invalid game type: ${game}`);
         return;
@@ -492,6 +572,23 @@ Total score: 11,500 / 15,000`);
         if (!user) {
             alert('Please log in to submit scores')
             return
+        }
+
+        // Check if game was already submitted today (CEST)
+        const today = getCESTDate();
+        const { data: existingSubmission, error: checkError } = await supabase
+            .from('scores')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('game', game)
+            .eq('date', today)
+            .single();
+
+        if (checkError && checkError.code !== 'PGRST116') throw checkError;
+        
+        if (existingSubmission) {
+            alert('You have already submitted a score for this game today. Try again after midnight local time.');
+            return;
         }
 
         // Verify user exists in users table
@@ -521,203 +618,209 @@ Total score: 11,500 / 15,000`);
                 user_id: user.id,
                 game,
                 score,
-                date: new Date().toISOString().split('T')[0]
+                date: today
             }])
         
         if (error) throw error
 
+        // Update UI immediately before the alert
+        const pasteBtn = document.querySelector(`[onclick="pasteFromClipboard('${game}')"]`);
+        if (pasteBtn) {
+            pasteBtn.disabled = true;
+            pasteBtn.classList.add('submitted');
+            pasteBtn.textContent = '✓ Submitted';
+        }
+
+        // Update counts and UI immediately
+        const submissionsElement = document.getElementById('today-submissions');
+        if (submissionsElement) {
+            const currentCount = parseInt(submissionsElement.textContent.split('/')[0]);
+            submissionsElement.textContent = `${currentCount + 1}/14`;
+        }
+
+        scoreInput.value = '';
+        if (leaderboardContent) updateLeaderboard();
+        
         alert('Score submitted successfully!');
-        scoreInput.value = ''
-        if (leaderboardContent) updateLeaderboard()
+
     } catch (error) {
-        console.error('Score submission error:', error)
-        alert('Error submitting score: ' + error.message)
+        console.error('Score submission error:', error);
+        alert('Error submitting score: ' + error.message);
     }
 }
 
 // Leaderboard update
 async function updateLeaderboard() {
-    if (!leaderboardContent || !gameSelect || !timePeriod) return
-    
-    const game = gameSelect.value
-    const period = timePeriod.value
-    
-    let query = supabase
-        .from('scores')
-        .select(`
-            *,
-            users (username)
-        `)
-        .order('score', { ascending: true })
-    
-    if (game !== 'all') {
-        query = query.eq('game', game)
-    }
-    
-    // Add date filtering based on period
-    const today = new Date().toISOString().split('T')[0]
-    switch(period) {
-        case 'today':
-            query = query.eq('date', today)
-            break
-        case 'week':
-            const weekAgo = new Date()
-            weekAgo.setDate(weekAgo.getDate() - 7)
-            query = query.gte('date', weekAgo.toISOString().split('T')[0])
-            break
-        case 'month':
-            const monthAgo = new Date()
-            monthAgo.setMonth(monthAgo.getMonth() - 1)
-            query = query.gte('date', monthAgo.toISOString().split('T')[0])
-            break
-    }
-    
+    if (!leaderboardContent || !gameSelect) return;
+
     try {
-        const { data, error } = await query
-        if (error) throw error
-        displayLeaderboard(data)
+        const selectedGame = gameSelect.value;
+        const { data: scores, error } = await supabase
+            .from('scores')
+            .select(`
+                user_id,
+                game,
+                score,
+                users (
+                    username,
+                    avatar_url
+                )
+            `)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (selectedGame === 'global') {
+            // Calculate global averages
+            const userPerformances = {};
+
+            scores.forEach(score => {
+                if (!userPerformances[score.user_id]) {
+                    userPerformances[score.user_id] = {
+                        totalPerformance: 0,
+                        gamesCount: 0,
+                        username: score.users.username,
+                        avatar_url: score.users.avatar_url
+                    };
+                }
+
+                const performancePercent = calculateGamePerformance(score.game, score.score);
+                userPerformances[score.user_id].totalPerformance += performancePercent;
+                userPerformances[score.user_id].gamesCount++;
+            });
+
+            const leaderboardData = Object.entries(userPerformances)
+                .map(([userId, data]) => ({
+                    userId,
+                    username: data.username,
+                    avatar_url: data.avatar_url,
+                    score: Math.round(data.totalPerformance / data.gamesCount),
+                    gamesPlayed: data.gamesCount
+                }))
+                .filter(user => user.gamesPlayed > 0)
+                .sort((a, b) => b.score - a.score);
+
+            displayGlobalLeaderboard(leaderboardData);
+        } else {
+            // Game-specific leaderboard
+            const gameScores = scores
+                .filter(score => score.game === selectedGame)
+                .map(score => ({
+                    userId: score.user_id,
+                    username: score.users.username,
+                    avatar_url: score.users.avatar_url,
+                    score: score.score
+                }))
+                .sort((a, b) => {
+                    const scoreA = calculateGamePerformance(selectedGame, a.score);
+                    const scoreB = calculateGamePerformance(selectedGame, b.score);
+                    return scoreB - scoreA;
+                });
+
+            displayGameLeaderboard(gameScores, selectedGame);
+        }
     } catch (error) {
-        console.error('Error fetching leaderboard:', error)
+        console.error('Error updating leaderboard:', error);
     }
 }
 
-function displayLeaderboard(data) {
-    if (!leaderboardContent) return
-    
-    const table = document.createElement('table')
-    const isAllGames = gameSelect.value === 'all'
-    
-    table.innerHTML = `
-        <tr>
-            <th>Rank</th>
-            <th>Player</th>
-            <th>Game</th>
-            <th>${isAllGames ? 'Score (%)' : 'Score'}</th>
-            <th>Date</th>
-        </tr>
-    `
-    
-    data.forEach((entry, index) => {
-        let displayScore = entry.score;
-        
-        if (isAllGames) {
-            // Convert scores to percentages for "All Games" view
-            switch(entry.game) {
-                case 'angle':
-                    // Score is already stored as percentage
-                    displayScore = Math.round(entry.score * 10) / 10;
-                    break;
-                case 'minecraftle':
-                    const minecraftleScoreMap = {
-                        1: 2,  // 1/6 -> 2/10
-                        2: 4,  // 2/6 -> 4/10
-                        3: 6,  // 3/6 -> 6/10
-                        4: 8,  // 4/6 -> 8/10
-                        5: 9,  // 5/6 -> 9/10
-                        6: 10, // 6/6 -> 10/10
-                        11: 0   // X -> 0/10
-                    };
-                    const mcScore = minecraftleScoreMap[entry.score];
-                    displayScore = (mcScore * 10);
-                    break;
-                case 'travle':
-                    // Convert stored score (1-11) to percentage
-                    const travlePercentages = {
-                        1: 100, // +0
-                        2: 83,  // +1
-                        3: 67,  // +2
-                        4: 50,  // +3
-                        5: 33,  // +4
-                        6: 17,  // +5
-                        7: 8,   // +6
-                        11: 0   // +7 or more (failed)
-                    };
-                    displayScore = travlePercentages[entry.score];
-                    break;
-                case 'whentaken':
-                    // Score is already stored as percentage
-                    displayScore = Math.round(entry.score * 10) / 10;
-                    break;
-                case 'geogrid':
-                    // Score is already stored as a percentage
-                    displayScore = Math.round(entry.score * 10) / 10;
-                    break;
-                case 'foodguessr':
-                    // Score is already stored as percentage
-                    displayScore = Math.round(entry.score * 10) / 10;
-                    break;
-                default:
-                    // For 6-attempt games (Wordle etc)
-                    if (entry.score > 6) displayScore = 0;
-                    else displayScore = Math.round(((7 - entry.score) / 6) * 100);
-                    break;
-            }
-            displayScore = `${displayScore}%`;
-        } else if (entry.game === 'angle') {
-            // For Angle-specific view, show score out of 4
-            if (entry.score === 11) {
-                displayScore = 'X/4';
-            } else {
-                // Convert percentage back to original score
-                const originalScore = 5 - Math.round(entry.score / 25);
-                displayScore = `${originalScore}/4`;
-            }
-        } else if (entry.game === 'minecraftle') {
-            // For Minecraftle-specific view, show score out of 10
-            const minecraftleScoreMap = {
-                1: 2, // 1/6 -> 2/10
-                2: 4, // 2/6 -> 4/10
-                3: 6, // 3/6 -> 6/10
-                4: 8, // 4/6 -> 8/10
-                5: 9, // 5/6 -> 9/10
-                6: 10, // 6/6 -> 10/10
-                11: 'X' // Failed attempt
-            };
-            displayScore = entry.score === 11 ? 'X/10' : minecraftleScoreMap[entry.score] + '/10';
-        } else if (entry.game === 'travle') {
-            // For Travle-specific view, show +N format
-            displayScore = entry.score === 11 ? 'X' : '+' + (entry.score - 1);
-        } else if (entry.game === 'whentaken') {
-            // For WhenTaken-specific view, show original X/1000 format
-            displayScore = `${Math.round(entry.score * 10)}/1000`;
-        } else if (entry.game === 'geogrid') {
-            // For GeoGrid-specific view, show original score out of 1000
-            // We stored the score as (100 - score/10), so we need to reverse that
-            const originalScore = Math.round((100 - entry.score) * 10);
-            displayScore = `${originalScore}/1000`;
-        } else if (entry.game === 'foodguessr') {
-            // For FoodGuessr-specific view, show original score out of 15000
-            const originalScore = Math.round((entry.score / 100) * 15000);
-            displayScore = `${originalScore.toLocaleString()}/15,000`;
-        } else {
-            // Game-specific views
-            if (entry.score === 11) {
-                displayScore = 'X';
-                if (entry.game === 'wordle' || entry.game === 'worldle' || entry.game === 'flagle') {
-                    displayScore += '/6';
-                } else if (entry.game === 'angle') {
-                    displayScore += '/4';
-                } else if (entry.game === 'minecraftle') {
-                    displayScore += '/10';
-                }
-            } else {
-                // For other game-specific views, show original score
-                displayScore = entry.score === 11 ? 'X/6' : entry.score + '/6';
-            }
-        }
+// Helper function to format percentage numbers
+function formatPercent(number) {
+    // Convert to fixed 2 decimals first
+    const fixed = Number(number).toFixed(2);
+    // Remove trailing zeros and decimal point if not needed
+    return fixed.replace(/\.?0+$/, '');
+}
 
-        const row = table.insertRow()
-        row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${entry.users.username}</td>
-            <td>${formatGameName(entry.game)}</td>
-            <td>${displayScore}</td>
-            <td>${entry.date}</td>
-        `
-    })
+function formatGameScore(game, score) {
+    const percent = calculateGamePerformance(game, score);
+    const formattedPercent = formatPercent(percent);
     
-    leaderboardContent.innerHTML = ''
-    leaderboardContent.appendChild(table)
+    if (game === 'angle' || game === 'whentaken' || game === 'geogrid' || game === 'foodguessr') {
+        return `${formatPercent(score)}%`;
+    } else if (game === 'waffle') {
+        return `${score}/5 (${formattedPercent}%)`;
+    } else if (game === 'minecraftle' || game === 'travle') {
+        return score === 11 ? 'X' : `+${score - 1} (${formattedPercent}%)`;
+    } else {
+        return score === 11 ? 'X/6' : `${score}/6 (${formattedPercent}%)`;
+    }
+}
+
+function displayGlobalLeaderboard(data) {
+    leaderboardContent.innerHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Average Performance</th>
+                    <th>Games Played</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${data.map((user, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td class="player-cell">
+                            <img src="${user.avatar_url || 'default-avatar.png'}" 
+                                 alt="${user.username}" 
+                                 class="leaderboard-avatar">
+                            ${user.username}
+                        </td>
+                        <td>${formatPercent(user.score)}%</td>
+                        <td>${user.gamesPlayed}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+function displayGameLeaderboard(data, game) {
+    leaderboardContent.innerHTML = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${data.map((user, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td class="player-cell">
+                            <img src="${user.avatar_url || 'default-avatar.png'}" 
+                                 alt="${user.username}" 
+                                 class="leaderboard-avatar">
+                            ${user.username}
+                        </td>
+                        <td>${formatGameScore(game, user.score)}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+// Helper function to calculate performance percentage for a game
+function calculateGamePerformance(game, score) {
+    if (game === 'angle' || game === 'whentaken' || game === 'geogrid' || game === 'foodguessr') {
+        return score; // These games already store percentage scores
+    } else if (game === 'waffle') {
+        return (score / 5) * 100;
+    } else if (game === 'minecraftle') {
+        const scoreMap = { 1: 100, 2: 83, 3: 67, 4: 50, 5: 33, 6: 17, 11: 0 };
+        return scoreMap[score] || 0;
+    } else if (game === 'travle') {
+        const scoreMap = { 1: 100, 2: 83, 3: 67, 4: 50, 5: 33, 6: 17, 7: 8, 11: 0 };
+        return scoreMap[score] || 0;
+    } else {
+        // Standard 6-attempt games (Wordle, Worldle, Flagle)
+        return ((7 - score) / 6) * 100;
+    }
 }
 
 function showScoreSubmission() {
@@ -806,7 +909,9 @@ async function pasteFromClipboard(game) {
 }
 
 // Initialize the UI when the DOM is loaded
-document.addEventListener('DOMContentLoaded', initializeUI)
+document.addEventListener('DOMContentLoaded', () => {
+    initializeUI();
+});
 
 // Update parseFoodGuesserShare function name and references
 function parseFoodGuesserShare(shareText) {
@@ -822,4 +927,125 @@ function parseFoodGuesserShare(shareText) {
     
     // Store the actual score as a percentage with one decimal place
     return parseFloat(((score / 15000) * 100).toFixed(1));
-} 
+}
+
+// Update formatScore function if it exists
+function formatScore(game, score) {
+    if (score === null) return '';
+    
+    switch(game) {
+        case 'waffle':
+            return score === 0 ? 'X/5' : `${score}/5`;
+        // ... existing cases ...
+    }
+}
+
+// Add these functions near the top with other utility functions
+function getTimeUntilMidnight() {
+    const now = new Date();
+    // Convert to CEST (UTC+2)
+    const cest = new Date(now.getTime() + (2 * 60 * 60 * 1000));
+    const midnight = new Date(cest);
+    midnight.setHours(24, 0, 0, 0);
+    const diff = midnight - cest;
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    return `${hours}h ${minutes}m`;
+}
+
+// Update countdown more frequently
+function updateCountdown() {
+    const countdownElement = document.getElementById('countdown-time');
+    if (countdownElement) {
+        countdownElement.textContent = getTimeUntilMidnight();
+    }
+}
+
+// Call updateCountdown more frequently
+setInterval(updateCountdown, 1000); // Update every second
+
+// Update the updateTodaySubmissions function
+async function updateTodaySubmissions() {
+    const submissionsElement = document.getElementById('today-submissions');
+    if (!submissionsElement) return;
+
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const today = getCESTDate();
+        const { data, error } = await supabase
+            .from('scores')
+            .select('game')
+            .eq('user_id', user.id)
+            .eq('date', today);
+
+        if (error) throw error;
+
+        submissionsElement.textContent = `${data.length}/14`;
+    } catch (error) {
+        console.error('Error fetching submissions:', error);
+    }
+}
+
+// Add this helper function to check if it's a new day
+function isNewDay(lastSubmitDate) {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const lastSubmit = new Date(lastSubmitDate);
+    return lastSubmit < today;
+}
+
+// Update checkSubmittedGames function
+async function checkSubmittedGames() {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const today = getCESTDate();
+        
+        // Get today's submissions
+        const { data, error } = await supabase
+            .from('scores')
+            .select('game')
+            .eq('user_id', user.id)
+            .eq('date', today);
+
+        if (error) throw error;
+
+        // Update submission count
+        const submissionsElement = document.getElementById('today-submissions');
+        if (submissionsElement) {
+            submissionsElement.textContent = `${data.length}/14`;
+        }
+
+        // Create a set of submitted games
+        const submittedGames = new Set(data.map(entry => entry.game));
+
+        // Update UI for each game
+        document.querySelectorAll('.game-card').forEach(card => {
+            const pasteBtn = card.querySelector('.paste-btn');
+            if (!pasteBtn || pasteBtn.classList.contains('info-card')) return;
+
+            const game = pasteBtn.getAttribute('onclick').match(/pasteFromClipboard\('(.+?)'\)/)[1];
+            
+            if (submittedGames.has(game)) {
+                pasteBtn.disabled = true;
+                pasteBtn.classList.add('submitted');
+                pasteBtn.textContent = '✓ Submitted';
+            } else {
+                pasteBtn.disabled = false;
+                pasteBtn.classList.remove('submitted');
+                pasteBtn.textContent = '📋 Paste Score';
+            }
+        });
+
+    } catch (error) {
+        console.error('Error checking submitted games:', error);
+    }
+}
+
+// Call checkSubmittedGames more frequently
+setInterval(checkSubmittedGames, 30000); // Check every 30 seconds 

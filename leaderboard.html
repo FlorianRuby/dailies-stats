@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GameStats - Leaderboard</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Add Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <header>
         <nav>
-            <div class="logo">GameStats</div>
+            <div class="logo">
+                <a href="index.html">GameStats</a>
+            </div>
             <div class="nav-links">
                 <a href="index.html">Home</a>
                 <a href="leaderboard.html">Leaderboard</a>
-                <a href="profile.html" id="profile-link" class="hidden">Profile</a>
+                <a href="profile.html" id="profile-link">Profile</a>
                 <div class="nav-right">
-                    <button id="theme-toggle" class="theme-toggle">
-                        <span class="light-icon">🌞</span>
-                        <span class="dark-icon">🌙</span>
-                    </button>
                     <div id="auth-buttons">
                         <button id="login-btn">Login</button>
                         <button id="signup-btn">Sign Up</button>
@@ -30,39 +30,31 @@
 
     <main>
         <!-- Leaderboard Section -->
-        <section id="leaderboard">
+        <div class="leaderboard-section">
             <h2>Leaderboard</h2>
             <div class="leaderboard-filters">
                 <select id="game-select">
-                    <option value="all">🎮 All Games</option>
+                    <option value="global">🎮 Global Average</option>
                     <option value="wordle">📝 Wordle</option>
                     <option value="worldle">🌍 Worldle</option>
+                    <option value="flagle">🎌 Flagle</option>
+                    <option value="angle">📐 Angle</option>
+                    <option value="minecraftle">⛏️ Minecraftle</option>
                     <option value="travle">✈️ Travle</option>
                     <option value="whentaken">📅 WhenTaken</option>
                     <option value="wheretaken">🌎 WhereTaken</option>
                     <option value="wheretaken-us">🦅 WhereTaken US</option>
-                    <option value="flagle">🎌 Flagle</option>
-                    <option value="geogrid">🗺️ GeoGrid</option>
-                    <option value="angle">📐 Angle</option>
-                    <option value="minecraftle">⛏️ Minecraftle</option>
+                    <option value="geogrid">��️ GeoGrid</option>
                     <option value="foodguessr">🍽️ FoodGuessr</option>
-                </select>
-                <select id="time-period">
-                    <option value="today">Today</option>
-                    <option value="week">This Week</option>
-                    <option value="month">This Month</option>
-                    <option value="all-time">All Time</option>
+                    <option value="waffle">🧇 Waffle</option>
+                    <option value="globle">🌍 Globle</option>
                 </select>
             </div>
             <div id="leaderboard-content">
                 <!-- Leaderboard data will be populated here -->
             </div>
-        </section>
+        </div>
     </main>
-
-    <footer>
-        <p>&copy; 2024 GameStats Leaderboard</p>
-    </footer>
 
     <!-- Login Modal -->
     <div id="login-modal" class="modal hidden">
