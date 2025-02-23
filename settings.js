@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const pictureUpload = document.getElementById('picture-upload');
     const changePasswordBtn = document.getElementById('change-password');
     const deleteAccountBtn = document.getElementById('delete-account');
+    const timezoneSelect = document.getElementById('timezone-select');
+    const saveTimezoneBtn = document.getElementById('save-timezone');
 
     // Check if user is logged in
     const { data: { session } } = await supabase.auth.getSession();
@@ -29,6 +31,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
         console.error('Error loading user data:', error);
         alert('Error loading user data');
+    }
+
+    // Load saved timezone or default to Berlin
+    try {
+        const { data, error } = await supabase
+            .from('users')
+            .select('timezone')
+            .eq('id', session.user.id)
+            .single();
+        
+        if (data?.timezone) {
+            timezoneSelect.value = data.timezone;
+        } else {
+            // If no timezone is set, update with default
+            await supabase
+                .from('users')
+                .update({ timezone: 'Europe/Berlin' })
+                .eq('id', session.user.id);
+            timezoneSelect.value = 'Europe/Berlin';
+        }
+    } catch (error) {
+        console.error('Error loading timezone:', error);
+        timezoneSelect.value = 'Europe/Berlin'; // Fallback
     }
 
     // Save username
@@ -99,6 +124,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         const confirmed = confirm('Are you sure you want to delete your account? This action cannot be undone.');
         if (confirmed) {
             alert('Account deletion functionality coming soon!');
+        }
+    });
+
+    // Save timezone
+    saveTimezoneBtn.addEventListener('click', async () => {
+        try {
+            const { error } = await supabase
+                .from('users')
+                .update({ timezone: timezoneSelect.value })
+                .eq('id', session.user.id);
+
+            if (error) {
+                console.error('Supabase error:', error);
+                throw new Error('Failed to update timezone');
+            }
+            
+            alert('Timezone updated successfully!');
+        } catch (error) {
+            console.error('Error updating timezone:', error);
+            alert('Error updating timezone. Please try again.');
         }
     });
 }); 

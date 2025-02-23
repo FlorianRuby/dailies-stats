@@ -97,9 +97,11 @@ function initializeUI() {
     // Check initial auth state
     checkInitialAuthState()
 
-    // Start countdown timer
+    // Start countdown timer with async handling
     updateCountdown();
-    setInterval(updateCountdown, 1000); // Update every second
+    setInterval(async () => {
+        await updateCountdown();
+    }, 1000);
 
     // Update submissions count
     updateTodaySubmissions();
@@ -982,30 +984,66 @@ function formatScore(game, score) {
 }
 
 // Add these functions near the top with other utility functions
-function getTimeUntilMidnight() {
-    const now = new Date();
-    // Convert to CEST (UTC+2)
-    const cest = new Date(now.getTime() + (2 * 60 * 60 * 1000));
-    const midnight = new Date(cest);
-    midnight.setHours(24, 0, 0, 0);
-    const diff = midnight - cest;
-    
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    
-    return `${hours}h ${minutes}m`;
-}
+async function getTimeUntilMidnight() {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            // Default to Berlin time for non-logged in users
+            const now = new Date();
+            const berlin = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
+            const midnight = new Date(berlin);
+            midnight.setHours(24, 0, 0, 0);
+            const diff = midnight - berlin;
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            return `${hours}h ${minutes}m`;
+        }
 
-// Update countdown more frequently
-function updateCountdown() {
-    const countdownElement = document.getElementById('countdown-time');
-    if (countdownElement) {
-        countdownElement.textContent = getTimeUntilMidnight();
+        // Get user's timezone
+        const { data, error } = await supabase
+            .from('users')
+            .select('timezone')
+            .eq('id', user.id)
+            .single();
+
+        const timezone = data?.timezone || 'Europe/Berlin';
+        
+        const now = new Date();
+        const userTime = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+        const midnight = new Date(userTime);
+        midnight.setHours(24, 0, 0, 0);
+        const diff = midnight - userTime;
+        
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        
+        return `${hours}h ${minutes}m`;
+    } catch (error) {
+        console.error('Error calculating time:', error);
+        return 'Error';
     }
 }
 
-// Call updateCountdown more frequently
-setInterval(updateCountdown, 1000); // Update every second
+// Update countdown function to handle async
+async function updateCountdown() {
+    const countdownElement = document.getElementById('countdown-time');
+    if (!countdownElement) return;
+    
+    try {
+        const timeLeft = await getTimeUntilMidnight();
+        countdownElement.textContent = timeLeft;
+    } catch (error) {
+        console.error('Error updating countdown:', error);
+        countdownElement.textContent = 'Error';
+    }
+}
+
+// Update the interval to use async function
+setInterval(async () => {
+    await updateCountdown();
+}, 1000);
 
 // Update the updateTodaySubmissions function
 async function updateTodaySubmissions() {
