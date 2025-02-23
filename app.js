@@ -459,7 +459,33 @@ function getCESTDate() {
     return cest.toISOString().slice(0, 10);
 }
 
-// Update submitScore function's date check
+function showToast(message, isError = false) {
+    // Remove any existing toasts
+    const existingToast = document.querySelector('.toast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+
+    // Create new toast
+    const toast = document.createElement('div');
+    toast.className = `toast${isError ? ' error' : ''}`;
+    
+    // Add icon based on type
+    const icon = isError ? '❌' : '✅';
+    
+    toast.innerHTML = `
+        <span class="toast-icon">${icon}</span>
+        <span>${message}</span>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Remove toast after animation
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
 async function submitScore(game) {
     const scoreInput = document.getElementById(`${game}-score`)
     if (!scoreInput) return
@@ -623,7 +649,7 @@ Total score: 11,500 / 15,000`);
         
         if (error) throw error
 
-        // Update UI immediately before the alert
+        // Update UI immediately
         const pasteBtn = document.querySelector(`[onclick="pasteFromClipboard('${game}')"]`);
         if (pasteBtn) {
             pasteBtn.disabled = true;
@@ -631,7 +657,7 @@ Total score: 11,500 / 15,000`);
             pasteBtn.textContent = '✓ Submitted';
         }
 
-        // Update counts and UI immediately
+        // Update counts and UI
         const submissionsElement = document.getElementById('today-submissions');
         if (submissionsElement) {
             const currentCount = parseInt(submissionsElement.textContent.split('/')[0]);
@@ -641,11 +667,13 @@ Total score: 11,500 / 15,000`);
         scoreInput.value = '';
         if (leaderboardContent) updateLeaderboard();
         
-        alert('Score submitted successfully!');
+        // Show success toast instead of alert
+        showToast('Score submitted successfully!');
 
     } catch (error) {
         console.error('Score submission error:', error);
-        alert('Error submitting score: ' + error.message);
+        // Show error toast instead of alert
+        showToast(error.message, true);
     }
 }
 

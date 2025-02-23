@@ -498,29 +498,31 @@ tr:hover {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #4CAF50;
+    background-color: var(--accent-color);
     color: white;
-    padding: 1rem 2rem;
+    padding: 0.8rem 1.5rem;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(119, 87, 171, 0.2);
     animation: slideIn 0.3s ease-out, fadeOut 0.5s ease-out 2.5s forwards;
     z-index: 1000;
     display: flex;
     align-items: center;
     gap: 10px;
+    font-size: 0.95rem;
 }
 
 .toast.error {
     background-color: #dc3545;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
 }
 
 .toast-icon {
-    font-size: 1.2em;
+    font-size: 1.1em;
 }
 
 @keyframes slideIn {
     from {
-        transform: translateX(100%);
+        transform: translateX(120%);
         opacity: 0;
     }
     to {
@@ -530,10 +532,12 @@ tr:hover {
 }
 
 @keyframes fadeOut {
-    from {
+    0% {
+        transform: translateX(0);
         opacity: 1;
     }
-    to {
+    100% {
+        transform: translateX(120%);
         opacity: 0;
     }
 }
@@ -1347,4 +1351,32 @@ section > h2:first-child,
     color: var(--text-color);
     font-size: 1rem;
     width: 200px;
+}
+
+/* Add styles for the logout section */
+.logout-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.logout-section .danger-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+.logout-section .danger-btn:hover {
+    background-color: #c82333;
+}
+
+.logout-section .danger-btn i {
+    font-size: 1.1rem;
 } 
