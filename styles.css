@@ -27,16 +27,18 @@ header {
 nav {
     max-width: 1200px;
     margin: 0 auto;
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    padding: 0 1rem;
+    padding: 0 2rem;
 }
 
 .nav-links {
+    grid-column: 2;
     display: flex;
     gap: 3rem;
     align-items: center;
+    justify-content: center;
 }
 
 .nav-links a {
@@ -71,9 +73,11 @@ nav {
 
 /* Update auth buttons in header */
 #auth-buttons {
+    grid-column: 3;
     display: flex;
     gap: 1.5rem;
-    margin-left: 3rem;
+    justify-content: flex-end;
+    margin-left: 0;
 }
 
 #auth-buttons button {
@@ -1428,4 +1432,32 @@ section > h2:first-child,
 
 .logout-section .danger-btn i {
     font-size: 1.1rem;
+}
+
+/* Leaderboard-specific header styles */
+.leaderboard-nav {
+    grid-column: 2;
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    margin-right: 26.87rem;
+}
+
+/* Override the nav structure just for leaderboard */
+.leaderboard-nav + #auth-buttons {
+    position: absolute;
+}
+
+header nav {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+/* Keep existing nav styles for other pages */
+header:not(:has(.leaderboard-nav)) nav {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
 } 
