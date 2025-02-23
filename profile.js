@@ -224,78 +224,60 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Calculate days since registration
         const registrationDate = new Date(userData.created_at);
         const today = new Date();
-        const daysSinceRegistration = Math.ceil((today - registrationDate) / (1000 * 60 * 60 * 24)) + 1;  // Always add 1 day
+        const daysSinceRegistration = Math.ceil((today - registrationDate) / (1000 * 60 * 60 * 24));
+        
+        // Calculate global rank
+        const globalRank = await calculateGlobalRank(user.id);
+        
+        // Calculate average performance
+        let totalPerformance = 0;
+        let gameCount = 0;
         
         Object.entries(stats).forEach(([game, stat]) => {
-            totalGames += stat.count;
-            gamesPlayed.add(game);
-            
-            // Calculate performance percentage based on game type
-            let gamePerf = 0;
-            if (game === 'angle' || game === 'whentaken' || game === 'geogrid' || game === 'foodguessr') {
-                // These games already store percentage scores
-                gamePerf = stat.total / stat.count;
-            } else if (game === 'waffle') {
-                // Waffle is out of 5
-                gamePerf = (stat.total / (stat.count * 5)) * 100;
-            } else if (game === 'minecraftle') {
-                // Minecraftle conversion
-                const mcScoreToPercent = score => {
-                    const scoreMap = { 1: 100, 2: 83, 3: 67, 4: 50, 5: 33, 6: 17, 11: 0 };
-                    return scoreMap[score] || 0;
-                };
-                gamePerf = mcScoreToPercent(stat.total / stat.count);
-            } else if (game === 'travle') {
-                // Travle conversion
-                const travleToPercent = score => {
-                    const scoreMap = { 1: 100, 2: 83, 3: 67, 4: 50, 5: 33, 6: 17, 7: 8, 11: 0 };
-                    return scoreMap[score] || 0;
-                };
-                gamePerf = travleToPercent(stat.total / stat.count);
-            } else {
-                // Standard 6-attempt games (Wordle, Worldle, Flagle)
-                gamePerf = ((7 - (stat.total / stat.count)) / 6) * 100;
+            if (stat.count > 0) {
+                totalGames += stat.count;
+                const gamePerformance = calculateGamePercentage(game, stat);
+                totalPerformance += gamePerformance;
+                gameCount++;
             }
-            totalScore += gamePerf;
+            gamesPlayed.add(game);
         });
 
-        const avgPerformance = totalScore / gamesPlayed.size;
+        const averagePerformance = gameCount > 0 ? Math.round(totalPerformance / gameCount) : 0;
         const gamesPerDay = (totalGames / daysSinceRegistration).toFixed(1);
-
-        return {
-            avgPerformance: Math.min(100, Math.round(avgPerformance)),
-            gamesPlayed: totalGames,
-            gamesPerDay: gamesPerDay
-        };
+        
+        // Create general stats card with average performance instead of games tried
+        const generalStatsCard = document.createElement('div');
+        generalStatsCard.className = 'general-stats-card';
+        generalStatsCard.innerHTML = `
+            <div class="stat-item">
+                <div class="stat-value">${gamesPerDay}</div>
+                <div class="stat-label">Games/Day</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">${averagePerformance}%</div>
+                <div class="stat-label">Average Performance</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">${totalGames}</div>
+                <div class="stat-label">Total Games</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">${globalRank ? `#${globalRank.rank}` : 'N/A'}</div>
+                <div class="stat-label">Global Rank</div>
+            </div>
+        `;
+        statsContainer.appendChild(generalStatsCard);
     }
 
     async function displayStats(stats) {
         if (!statsContainer) return;
 
-        // Calculate general stats
-        const generalStats = await calculateGeneralStats(stats);
-        
         // Clear container
         statsContainer.innerHTML = '';
         
-        // Add general stats card
-        const generalStatsCard = document.createElement('div');
-        generalStatsCard.className = 'general-stats-card';
-        generalStatsCard.innerHTML = `
-            <div class="stat-item">
-                <div class="stat-value">${generalStats.avgPerformance}%</div>
-                <div class="stat-label">Avg Performance</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">${generalStats.gamesPlayed}</div>
-                <div class="stat-label">Games Played</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">${generalStats.gamesPerDay}</div>
-                <div class="stat-label">Games/Day</div>
-            </div>
-        `;
-        statsContainer.appendChild(generalStatsCard);
+        // Calculate general stats (this now directly creates the card)
+        await calculateGeneralStats(stats);
         
         // Define all available games
         const allGames = [

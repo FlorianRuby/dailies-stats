@@ -498,6 +498,37 @@ function showToast(message, isError = false) {
     }, 3000);
 }
 
+// Update the getCESTDate function to use user's timezone
+async function getUserDate() {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            // Default to CEST for non-logged in users
+            const now = new Date();
+            const cest = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
+            return cest.toISOString().split('T')[0];
+        }
+
+        // Get user's timezone
+        const { data } = await supabase
+            .from('users')
+            .select('timezone')
+            .eq('id', user.id)
+            .single();
+
+        const timezone = data?.timezone || 'Europe/Berlin';
+        const now = new Date();
+        const userTime = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+        return userTime.toISOString().split('T')[0];
+    } catch (error) {
+        console.error('Error getting user date:', error);
+        // Fallback to CEST
+        const now = new Date();
+        const cest = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
+        return cest.toISOString().split('T')[0];
+    }
+}
+
 async function submitScore(game) {
     const scoreInput = document.getElementById(`${game}-score`)
     if (!scoreInput) return
@@ -603,20 +634,18 @@ Total score: 11,500 / 15,000`);
     }
 
     try {
-        // Get current user
-        const { data: { user }, error: userError } = await supabase.auth.getUser()
-        if (userError) throw userError
-        
+        const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-            alert('Please log in to submit scores')
-            return
+            alert('Please log in to submit scores');
+            return;
         }
 
-        // Check if game was already submitted today (CEST)
-        const today = getCESTDate();
+        const today = await getUserDate();
+
+        // Check for existing submission
         const { data: existingSubmission, error: checkError } = await supabase
             .from('scores')
-            .select('id')
+            .select()
             .eq('user_id', user.id)
             .eq('game', game)
             .eq('date', today)
@@ -1054,7 +1083,7 @@ async function updateTodaySubmissions() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        const today = getCESTDate();
+        const today = await getUserDate();
         const { data, error } = await supabase
             .from('scores')
             .select('game')
@@ -1077,13 +1106,13 @@ function isNewDay(lastSubmitDate) {
     return lastSubmit < today;
 }
 
-// Update checkSubmittedGames function
+// Update checkSubmittedGames to use the new function
 async function checkSubmittedGames() {
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        const today = getCESTDate();
+        const today = await getUserDate();
         
         // Get today's submissions
         const { data, error } = await supabase
@@ -1100,9 +1129,6 @@ async function checkSubmittedGames() {
             submissionsElement.textContent = `${data.length}/14`;
         }
 
-        // Create a set of submitted games
-        const submittedGames = new Set(data.map(entry => entry.game));
-
         // Update UI for each game
         document.querySelectorAll('.game-card').forEach(card => {
             const pasteBtn = card.querySelector('.paste-btn');
@@ -1110,7 +1136,7 @@ async function checkSubmittedGames() {
 
             const game = pasteBtn.getAttribute('onclick').match(/pasteFromClipboard\('(.+?)'\)/)[1];
             
-            if (submittedGames.has(game)) {
+            if (data.some(entry => entry.game === game)) {
                 pasteBtn.disabled = true;
                 pasteBtn.classList.add('submitted');
                 pasteBtn.textContent = '✓ Submitted';
@@ -1128,3 +1154,105 @@ async function checkSubmittedGames() {
 
 // Call checkSubmittedGames more frequently
 setInterval(checkSubmittedGames, 30000); // Check every 30 seconds 
+
+// Add this function to calculate global rank for a user
+async function calculateGlobalRank(userId) {
+    try {
+        // Get all scores
+        const { data: scores, error } = await supabase
+            .from('scores')
+            .select(`
+                user_id,
+                game,
+                score,
+                users (
+                    username
+                )
+            `);
+
+        if (error) throw error;
+
+        // Calculate average performance for each user
+        const userPerformances = {};
+        scores.forEach(score => {
+            if (!userPerformances[score.user_id]) {
+                userPerformances[score.user_id] = {
+                    totalPerformance: 0,
+                    gamesCount: 0
+                };
+            }
+            const performancePercent = calculateGamePerformance(score.game, score.score);
+            userPerformances[score.user_id].totalPerformance += performancePercent;
+            userPerformances[score.user_id].gamesCount++;
+        });
+
+        // Convert to array and sort by average performance
+        const rankedUsers = Object.entries(userPerformances)
+            .map(([id, data]) => ({
+                userId: id,
+                averageScore: data.gamesCount > 0 ? data.totalPerformance / data.gamesCount : 0
+            }))
+            .filter(user => user.averageScore > 0)
+            .sort((a, b) => b.averageScore - a.averageScore);
+
+        // Find user's position
+        const userRank = rankedUsers.findIndex(user => user.userId === userId) + 1;
+        const totalPlayers = rankedUsers.length;
+
+        return { rank: userRank, total: totalPlayers };
+    } catch (error) {
+        console.error('Error calculating global rank:', error);
+        return null;
+    }
+}
+
+// Update the displayUserStats function to include global rank
+async function displayUserStats(scores, userId) {
+    try {
+        const stats = processStats(scores);
+        const globalRank = await calculateGlobalRank(userId);
+        
+        const statsContainer = document.getElementById('stats-container');
+        if (!statsContainer) return;
+
+        // Calculate games per day
+        const uniqueDates = new Set(scores.map(score => score.date)).size;
+        const totalDays = scores.length > 0 
+            ? Math.max(1, Math.round((new Date() - new Date(scores[0].date)) / (1000 * 60 * 60 * 24)))
+            : 1;
+        const gamesPerDay = (scores.length / totalDays).toFixed(1);
+
+        // Add global rank and games per day stats
+        statsContainer.innerHTML = `
+            <div class="stat-card">
+                <div class="stat-value">${gamesPerDay}</div>
+                <div class="stat-label">Games/Day</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">${globalRank ? `#${globalRank.rank}/${globalRank.total}` : 'N/A'}</div>
+                <div class="stat-label">Global Rank</div>
+            </div>
+            ${Object.entries(stats).map(([game, stat]) => `
+                <div class="stat-card">
+                    <div class="stat-header">${formatGameName(game)}</div>
+                    <div class="stat-content">
+                        <div>
+                            <div class="stat-value">${formatScoreForDisplay(game, stat.best)}</div>
+                            <div class="stat-label">Best Score</div>
+                        </div>
+                        <div>
+                            <div class="stat-value">${stat.count}</div>
+                            <div class="stat-label">Games Played</div>
+                        </div>
+                        <div>
+                            <div class="stat-value">${formatScoreForDisplay(game, stat.total / stat.count)}</div>
+                            <div class="stat-label">Average</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        `;
+    } catch (error) {
+        console.error('Error displaying stats:', error);
+    }
+} 

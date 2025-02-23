@@ -49,6 +49,56 @@
                 <!-- Leaderboard data will be populated here -->
             </div>
         </div>
+
+        <!-- Add this right after the leaderboard-section div and before the analytics-section -->
+        <div id="personal-analytics" class="analytics-section hidden">
+            <h2>Your Stats</h2>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Your Daily Activity</h3>
+                    <canvas id="personalActivityChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Your Favorite Games</h3>
+                    <canvas id="personalGamesChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Your Performance Trend</h3>
+                    <canvas id="personalPerformanceChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Games Per Day</h3>
+                    <div class="stat-summary">
+                        <div id="gamesPerDay" class="stat-value">0</div>
+                        <div class="stat-label">Average games per day</div>
+                    </div>
+                    <canvas id="gamesPerDayChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add this after the leaderboard-section div and before the login modal -->
+        <div class="analytics-section">
+            <h2>Analytics</h2>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Daily Submissions</h3>
+                    <canvas id="dailySubmissionsChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Popular Games</h3>
+                    <canvas id="popularGamesChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Average Performance by Game</h3>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Active Players Trend</h3>
+                    <canvas id="activePlayersChart"></canvas>
+                </div>
+            </div>
+        </div>
     </main>
 
     <!-- Login Modal -->
@@ -101,5 +151,6 @@
         });
     </script>
     <script src="leaderboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html> 
