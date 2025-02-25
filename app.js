@@ -234,17 +234,22 @@ function parseWorldleShare(shareText) {
     return scoreText === 'X' ? 11 : parseInt(scoreText);
 }
 
-// Add this function after the other parser functions
+// Update the parseFlagleShare function to be more flexible
 function parseFlagleShare(shareText) {
     // Check if share text is provided
     if (!shareText) return null;
 
-    // Try to find the score pattern (e.g., "4/6")
-    const scoreMatch = shareText.match(/#Flagle #\d+ \(.*?\) (\d|X)\/6/);
+    // First check if it's a Flagle share by looking for the URL or #Flagle
+    if (!shareText.includes('flagle.io') && !shareText.includes('#Flagle')) return null;
+
+    // Try to find the score pattern with a more flexible regex
+    // This will match "#Flagle #XXXX (date) X/6" format
+    const scoreMatch = shareText.match(/#Flagle #\d+ \(.*?\) (\d|X)\/(\d+)/i);
     if (!scoreMatch) return null;
 
-    // Extract the score number
+    // Extract the score number and max attempts
     const scoreText = scoreMatch[1];
+    const maxAttempts = parseInt(scoreMatch[2]);
     
     // Return 11 for X (failed attempt) or the actual number
     return scoreText === 'X' ? 11 : parseInt(scoreText);
@@ -255,12 +260,16 @@ function parseAngleShare(shareText) {
     // Check if share text is provided
     if (!shareText) return null;
 
-    // Try to find the score pattern (e.g., "3/4")
-    const scoreMatch = shareText.match(/#Angle #\d+ (\d|X)\/4/);
+    // First check if it's an Angle share by looking for the URL or #Angle
+    if (!shareText.includes('angle.wtf') && !shareText.includes('#Angle')) return null;
+
+    // Try to find the score pattern with a more flexible regex
+    const scoreMatch = shareText.match(/#Angle #\d+ (\d|X)\/(\d+)/i);
     if (!scoreMatch) return null;
 
     // Extract the score number
     const scoreText = scoreMatch[1];
+    const maxAttempts = parseInt(scoreMatch[2]);
     
     if (scoreText === 'X') return 11;
     const originalScore = parseInt(scoreText);
@@ -990,17 +999,133 @@ function getHiddenInput(game) {
 
 // Update pasteFromClipboard function
 async function pasteFromClipboard(game) {
-    try {
-        const text = await navigator.clipboard.readText();
-        const scoreInput = getHiddenInput(game);
-        if (scoreInput) {
-            scoreInput.value = text;
-            submitScore(game);
-        }
-    } catch (err) {
-        console.error('Failed to read clipboard:', err);
-        alert('Unable to access clipboard. Please paste manually.');
+    // Clear previous status
+    const statusElement = document.getElementById(`${game}-status`);
+    if (statusElement) {
+        statusElement.textContent = '';
+        statusElement.className = 'paste-status';
     }
+    
+    navigator.clipboard.readText()
+        .then(text => {
+            let score = null;
+            let isValid = false;
+            
+            try {
+                // Game-specific parsing logic
+                if (game === 'wordle') {
+                    // Improved Wordle regex that handles numbers with or without decimal points
+                    const wordleRegex = /Wordle\s+(\d+\.?\d*)\s+(\d+)\/(\d+)/i;
+                    const match = text.match(wordleRegex);
+                    
+                    if (match) {
+                        // Extract game number (removing any decimal point)
+                        const gameNumber = match[1].replace('.', '');
+                        const attempts = parseInt(match[2]);
+                        const maxAttempts = parseInt(match[3]);
+                        
+                        if (attempts > 0 && attempts <= maxAttempts) {
+                            score = attempts;
+                            isValid = true;
+                        }
+                    }
+                } else if (game === 'foodguessr') {
+                    score = parseFoodGuesserShare(text);
+                    if (score !== null) {
+                        isValid = true;
+                    }
+                } else if (game === 'flagle') {
+                    score = parseFlagleShare(text);
+                    if (score !== null) {
+                        isValid = true;
+                    }
+                } else if (game === 'angle') {
+                    score = parseAngleShare(text);
+                    if (score !== null) {
+                        isValid = true;
+                    }
+                } else if (game === 'worldle') {
+                    score = parseWorldleShare(text);
+                    if (score !== null) {
+                        isValid = true;
+                    }
+                } else if (game === 'wheretaken') {
+                    score = parseWhereTakenShare(text);
+                    if (score !== null) {
+                        isValid = true;
+                    }
+                } else if (game === 'wheretaken-us') {
+                    score = parseWhereTakenUSShare(text);
+                    if (score !== null) {
+                        isValid = true;
+                    }
+                } else if (game === 'minecraftle') {
+                    score = parseMinecraftleShare(text);
+                    if (score !== null) {
+                        isValid = true;
+                    }
+                } else if (game === 'travle') {
+                    score = parseTravleShare(text);
+                    if (score !== null) {
+                        isValid = true;
+                    }
+                } else if (game === 'whentaken') {
+                    score = parseWhenTakenShare(text);
+                    if (score !== null) {
+                        isValid = true;
+                    }
+                } else if (game === 'geogrid') {
+                    score = parseGeoGridShare(text);
+                    if (score !== null) {
+                        isValid = true;
+                    }
+                } else if (game === 'waffle') {
+                    score = parseWaffleShare(text);
+                    if (score !== null) {
+                        isValid = true;
+                    }
+                } else if (game === 'globle') {
+                    score = parseGlobleShare(text);
+                    if (score !== null) {
+                        isValid = true;
+                    }
+                }
+                
+                if (isValid && score !== null) {
+                    // Create hidden input for the score
+                    const scoreInput = getHiddenInput(game);
+                    scoreInput.value = text;
+                    
+                    // Submit the score
+                    submitScore(game);
+                    
+                    // Show success message
+                    if (statusElement) {
+                        statusElement.textContent = `Score submitted: ${score}`;
+                        statusElement.className = 'paste-status paste-success';
+                    }
+                } else {
+                    throw new Error("Invalid score format");
+                }
+            } catch (error) {
+                console.error(`Error parsing ${game} score:`, error);
+                
+                // Show error message
+                if (statusElement) {
+                    statusElement.textContent = `Could not parse score. Please try again.`;
+                    statusElement.className = 'paste-status paste-error';
+                }
+            }
+        })
+        .catch(err => {
+            console.error('Failed to read clipboard contents: ', err);
+            
+            // Show error message
+            if (statusElement) {
+                statusElement.textContent = `Clipboard access failed. Please try again.`;
+                statusElement.className = 'paste-status paste-error';
+            }
+        });
 }
 
 // Initialize the UI when the DOM is loaded
@@ -1013,8 +1138,12 @@ function parseFoodGuesserShare(shareText) {
     // Check if share text is provided
     if (!shareText) return null;
 
-    // Try to find the score pattern (e.g., "Total score: X / 15,000")
-    const scoreMatch = shareText.match(/Total score: ([\d,]+) \/ 15,000/);
+    // First check if it's a FoodGuessr share by looking for the URL
+    if (!shareText.includes('foodguessr.com')) return null;
+
+    // Try to find the score pattern with a more flexible regex
+    // This will match "Total score: X,XXX / 15,000" anywhere in the text
+    const scoreMatch = shareText.match(/Total score: ([\d,]+)\s*\/\s*15,000/i);
     if (!scoreMatch) return null;
 
     // Extract the score and remove commas

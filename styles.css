@@ -160,6 +160,7 @@ section {
 .games-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: minmax(220px, auto);
     gap: 1rem;
     margin-top: 1rem;
     background-color: var(--card-bg);
@@ -178,6 +179,7 @@ section {
     gap: 1rem;
     align-items: center;
     border-radius: 8px;
+    height: 100%;
 }
 
 .paste-btn {
@@ -189,6 +191,7 @@ section {
     justify-content: center;
     gap: 0.5rem;
     border-radius: 4px;
+    margin-top: auto;
 }
 
 .game-card button:not(.paste-btn) {
@@ -201,6 +204,11 @@ section {
     text-align: center;
     padding: 0.5rem;
     border-radius: 4px;
+    margin-top: auto;
+}
+
+.game-card h3 {
+    margin-bottom: auto;
 }
 
 /* Leaderboard Styles */
@@ -538,12 +546,14 @@ tr:hover {
 @media (max-width: 768px) {
     .games-grid {
         grid-template-columns: 1fr;
+        grid-auto-rows: minmax(180px, auto);
     }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
     .games-grid {
         grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: minmax(200px, auto);
     }
 }
 
@@ -670,13 +680,14 @@ section {
     gap: 1rem;
     align-items: center;
     border-radius: 8px;
+    height: 100%;
 }
 
 .game-card h3 {
     margin: 0;
     font-size: 1.2rem;
+    margin-bottom: auto;
 }
-
 
 .game-card button:not(.paste-btn) {
     width: 100%;
@@ -860,10 +871,9 @@ header, footer {
 
 .profile-content {
     display: grid;
-    grid-template-columns: 1fr 3fr;
-    gap: 2rem;
-    min-height: calc(100vh - 265px);
-    margin-top: 0.5rem;
+    grid-template-columns: 1fr 2fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
 }
 
 .profile-header {
@@ -1171,6 +1181,7 @@ section > h2:first-child,
     justify-content: center;
     text-align: center;
     background-color: var(--card-bg);
+    height: 100%;
 }
 
 .info-value {
@@ -1650,4 +1661,60 @@ header:not(:has(.leaderboard-nav)) nav {
     padding: 1rem;
     border-radius: 8px;
     border: 1px solid var(--border-color);
+}
+
+/* Make recent submissions and stats section have equal heights */
+.profile-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Make both sections the same height */
+.recent-submissions,
+.stats-section {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Make the containers inside each section fill the available space */
+#history-container,
+#stats-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure the stats container fills the available height */
+#stats-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    align-content: start; /* Start from the top */
+    min-height: 100%;
+}
+
+/* Make sure the history container has a minimum height */
+#history-container {
+    min-height: 500px;
+    max-height: none; /* Remove max-height limitation */
+    overflow-y: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .profile-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .recent-submissions,
+    .stats-section {
+        height: auto;
+    }
+    
+    #history-container {
+        max-height: 500px; /* Add max-height for mobile */
+    }
 } 

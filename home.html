@@ -13,6 +13,27 @@
             vertical-align: middle;
             margin-right: 0.2em;
         }
+        
+        /* Add styles for paste status indicator */
+        .paste-status {
+            display: none;
+            font-size: 0.8em;
+            margin-top: 5px;
+            padding: 3px;
+            border-radius: 3px;
+        }
+        
+        .paste-success {
+            display: block;
+            background-color: rgba(0, 255, 0, 0.1);
+            color: #008800;
+        }
+        
+        .paste-error {
+            display: block;
+            background-color: rgba(255, 0, 0, 0.1);
+            color: #880000;
+        }
     </style>
 </head>
 <body>
@@ -45,66 +66,79 @@
                     <h3>📝 Wordle</h3>
                     <a href="https://www.nytimes.com/games/wordle/index.html" target="_blank" class="game-link">Play Game</a>
                     <button onclick="pasteFromClipboard('wordle')" class="paste-btn">📋 Paste Score</button>
+                    <div id="wordle-status" class="paste-status"></div>
                 </div>
                 <div class="game-card">
                     <h3>🌍 Worldle</h3>
                     <a href="https://worldle.teuteuf.fr/" target="_blank" class="game-link">Play Game</a>
                     <button onclick="pasteFromClipboard('worldle')" class="paste-btn">📋 Paste Score</button>
+                    <div id="worldle-status" class="paste-status"></div>
                 </div>
                 <div class="game-card">
                     <h3>🎌 Flagle</h3>
                     <a href="https://www.flagle.io/" target="_blank" class="game-link">Play Game</a>
                     <button onclick="pasteFromClipboard('flagle')" class="paste-btn">📋 Paste Score</button>
+                    <div id="flagle-status" class="paste-status"></div>
                 </div>
                 <div class="game-card">
                     <h3>✈️ Travle</h3>
                     <a href="https://travle.earth/" target="_blank" class="game-link">Play Game</a>
                     <button onclick="pasteFromClipboard('travle')" class="paste-btn">📋 Paste Score</button>
+                    <div id="travle-status" class="paste-status"></div>
                 </div>
                 <div class="game-card">
                     <h3>📅 WhenTaken</h3>
                     <a href="https://whentaken.com/" target="_blank" class="game-link">Play Game</a>
                     <button onclick="pasteFromClipboard('whentaken')" class="paste-btn">📋 Paste Score</button>
+                    <div id="whentaken-status" class="paste-status"></div>
                 </div>
                 <div class="game-card">
                     <h3>🌎 WhereTaken</h3>
                     <a href="https://wheretaken.teuteuf.fr/" target="_blank" class="game-link">Play Game</a>
                     <button onclick="pasteFromClipboard('wheretaken')" class="paste-btn">📋 Paste Score</button>
+                    <div id="wheretaken-status" class="paste-status"></div>
                 </div>
                 <div class="game-card">
                     <h3>🦅 WhereTaken US</h3>
                     <a href="https://wheretakenusa.teuteuf.fr/" target="_blank" class="game-link">Play Game</a>
                     <button onclick="pasteFromClipboard('wheretaken-us')" class="paste-btn">📋 Paste Score</button>
+                    <div id="wheretaken-us-status" class="paste-status"></div>
                 </div>
                 <div class="game-card">
                     <h3>🗺️ GeoGrid</h3>
                     <a href="https://www.geogridgame.com/" target="_blank" class="game-link">Play Game</a>
                     <button onclick="pasteFromClipboard('geogrid')" class="paste-btn">📋 Paste Score</button>
+                    <div id="geogrid-status" class="paste-status"></div>
                 </div>
                 <div class="game-card">
                     <h3>📐 Angle</h3>
                     <a href="https://angle.wtf" target="_blank" class="game-link">Play Game</a>
                     <button onclick="pasteFromClipboard('angle')" class="paste-btn">📋 Paste Score</button>
+                    <div id="angle-status" class="paste-status"></div>
                 </div>
                 <div class="game-card">
                     <h3>⛏️ Minecraftle</h3>
                     <a href="https://minecraftle.zachmanson.com/" target="_blank" class="game-link">Play Game</a>
                     <button onclick="pasteFromClipboard('minecraftle')" class="paste-btn">📋 Paste Score</button>
+                    <div id="minecraftle-status" class="paste-status"></div>
                 </div>
                 <div class="game-card">
                     <h3>🍽️ FoodGuessr</h3>
                     <a href="https://foodguessr.com/" target="_blank" class="game-link">Play Game</a>
                     <button onclick="pasteFromClipboard('foodguessr')" class="paste-btn">📋 Paste Score</button>
+                    <div id="foodguessr-status" class="paste-status"></div>
                 </div>
                 <div class="game-card">
                     <h3>🧇 Waffle</h3>
                     <a href="https://wafflegame.net/" target="_blank" class="game-link">Play Game</a>
                     <button onclick="pasteFromClipboard('waffle')" class="paste-btn">📋 Paste Score</button>
+                    <div id="waffle-status" class="paste-status"></div>
                 </div>
                 <div class="game-card">
                     <h3>🌍 Globle</h3>
                     <a href="https://globle-game.com" target="_blank" class="game-link">Play Game</a>
                     <button onclick="pasteFromClipboard('globle')" class="paste-btn">📋 Paste Score</button>
+                    <div id="globle-status" class="paste-status"></div>
                 </div>
             </div>
         </section>
