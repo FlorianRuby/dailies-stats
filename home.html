@@ -34,6 +34,28 @@
             background-color: rgba(255, 0, 0, 0.1);
             color: #880000;
         }
+        
+        /* Mobile-specific styles for home page */
+        @media (max-width: 768px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .game-card {
+                padding: 1rem;
+            }
+            
+            .paste-btn {
+                padding: 0.7rem;
+            }
+        }
+        
+        /* Make sure tables can scroll horizontally on mobile */
+        .table-container {
+            overflow-x: auto;
+            width: 100%;
+        }
     </style>
 </head>
 <body>

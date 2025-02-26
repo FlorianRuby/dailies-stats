@@ -169,13 +169,52 @@ body {
 
     .description-side {
         padding: 2rem;
+        min-height: auto;
     }
 
     .description-content h1 {
         font-size: 2.5rem;
     }
 
+    .tagline {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .description {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-list {
+        gap: 1rem;
+    }
+
     .auth-container {
-        padding: 1rem;
+        padding: 1.5rem;
+        width: 100%;
+    }
+}
+
+/* Add styles for even smaller screens */
+@media (max-width: 480px) {
+    .description-side {
+        padding: 1.5rem;
+    }
+
+    .description-content h1 {
+        font-size: 2rem;
+    }
+
+    .auth-form h2 {
+        font-size: 1.5rem;
+    }
+
+    .form-group input {
+        padding: 0.8rem;
+    }
+
+    .auth-button {
+        padding: 0.8rem;
     }
 } 

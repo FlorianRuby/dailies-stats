@@ -22,6 +22,11 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
+        const loginButton = loginForm.querySelector('.auth-button');
+        
+        // Show loading state
+        loginButton.textContent = 'Logging in...';
+        loginButton.disabled = true;
 
         try {
             // First try to find user by username
@@ -39,9 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 password,
             });
 
-            if (error && error.message !== 'Email not confirmed') throw error;
+            // If there's an error and it's not just "Email not confirmed", throw it
+            if (error) {
+                // Only throw if it's a real error
+                if (error.message !== 'Email not confirmed') {
+                    throw error;
+                }
+            }
             
-            // Store the session
+            // Store the session and redirect - this happens even with "Email not confirmed"
             if (data?.session) {
                 localStorage.setItem('supabase.auth.token', data.session.access_token);
             }
@@ -49,6 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'home.html';
         } catch (error) {
             console.error('Login error:', error);
+            // Reset button state
+            loginButton.textContent = 'Login';
+            loginButton.disabled = false;
+            
+            // Only show alerts for actual errors
             if (error && error.message === 'Invalid login credentials') {
                 alert('Invalid username/email or password');
             } else if (error && !error.message.includes('Email not confirmed')) {
@@ -63,6 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = document.getElementById('signup-email').value;
         const password = document.getElementById('signup-password').value;
         const username = document.getElementById('signup-username').value;
+        const signupButton = signupForm.querySelector('.auth-button');
+        
+        // Show loading state
+        signupButton.textContent = 'Creating account...';
+        signupButton.disabled = true;
 
         try {
             const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -88,6 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Signup error:', error);
+            // Reset button state
+            signupButton.textContent = 'Sign Up';
+            signupButton.disabled = false;
+            
             alert(error.message);
         }
     });

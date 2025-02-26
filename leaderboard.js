@@ -470,4 +470,74 @@ function updateGamesPerDayStats(average) {
     if (gamesPerDayElement) {
         gamesPerDayElement.textContent = average;
     }
+}
+
+function renderLeaderboard(data) {
+    const leaderboardContent = document.getElementById('leaderboard-content');
+    
+    // Clear previous content
+    leaderboardContent.innerHTML = '';
+    
+    // Create table container for horizontal scrolling on mobile
+    const tableContainer = document.createElement('div');
+    tableContainer.className = 'table-container';
+    
+    // Create table
+    const table = document.createElement('table');
+    table.id = 'leaderboard-table';
+    
+    // Create table header
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+    
+    // Add header cells
+    const headers = ['Rank', 'Player', 'Average Performance'];
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.textContent = headerText;
+        headerRow.appendChild(th);
+    });
+    
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+    
+    // Create table body
+    const tbody = document.createElement('tbody');
+    
+    // Add data rows
+    data.forEach((player, index) => {
+        const row = document.createElement('tr');
+        
+        // Rank cell
+        const rankCell = document.createElement('td');
+        rankCell.textContent = index + 1;
+        row.appendChild(rankCell);
+        
+        // Player cell with avatar
+        const playerCell = document.createElement('td');
+        playerCell.className = 'player-cell';
+        
+        const avatar = document.createElement('img');
+        avatar.src = player.avatar_url || 'default-avatar.png';
+        avatar.alt = 'Avatar';
+        avatar.className = 'leaderboard-avatar';
+        
+        const playerName = document.createElement('span');
+        playerName.textContent = player.username;
+        
+        playerCell.appendChild(avatar);
+        playerCell.appendChild(playerName);
+        row.appendChild(playerCell);
+        
+        // Score cell
+        const scoreCell = document.createElement('td');
+        scoreCell.textContent = player.score + '%';
+        row.appendChild(scoreCell);
+        
+        tbody.appendChild(row);
+    });
+    
+    table.appendChild(tbody);
+    tableContainer.appendChild(table);
+    leaderboardContent.appendChild(tableContainer);
 } 

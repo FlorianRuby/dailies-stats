@@ -7,6 +7,59 @@
     <link rel="stylesheet" href="styles.css">
     <!-- Add Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Mobile-specific styles for leaderboard */
+        @media (max-width: 768px) {
+            .leaderboard-filters {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .leaderboard-filters select {
+                width: 100%;
+            }
+            
+            /* Make tables scrollable horizontally */
+            .table-container {
+                overflow-x: auto;
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+            
+            /* Adjust chart size */
+            #leaderboard-chart {
+                height: 250px !important;
+            }
+            
+            /* Improve table display on mobile */
+            #leaderboard-content table {
+                min-width: 100%;
+                font-size: 0.9rem;
+            }
+            
+            #leaderboard-content th,
+            #leaderboard-content td {
+                padding: 0.7rem 0.5rem;
+            }
+            
+            /* Make rank column narrower */
+            #leaderboard-content th:first-child,
+            #leaderboard-content td:first-child {
+                width: 40px;
+                text-align: center;
+            }
+            
+            /* Ensure player cell is compact */
+            .player-cell {
+                gap: 0.3rem;
+            }
+            
+            .leaderboard-avatar {
+                width: 25px;
+                height: 25px;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -152,5 +205,12 @@
     </script>
     <script src="leaderboard.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Wrap tables in a scrollable container -->
+    <div class="table-container">
+        <table id="leaderboard-table">
+            <!-- Table content -->
+        </table>
+    </div>
 </body>
 </html> 

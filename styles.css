@@ -1696,10 +1696,10 @@ header:not(:has(.leaderboard-nav)) nav {
     min-height: 100%;
 }
 
-/* Make sure the history container has a minimum height */
+/* Make sure the history container has a fixed height that matches stats */
 #history-container {
-    min-height: 500px;
-    max-height: none; /* Remove max-height limitation */
+    min-height: 0; /* Remove min-height */
+    max-height: 715px; /* Set a fixed max-height */
     overflow-y: auto;
 }
 
@@ -1717,4 +1717,171 @@ header:not(:has(.leaderboard-nav)) nav {
     #history-container {
         max-height: 500px; /* Add max-height for mobile */
     }
-} 
+}
+
+/* Add these responsive styles to styles.css */
+
+/* Mobile navigation */
+@media (max-width: 768px) {
+    nav {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+    }
+    
+    .nav-links {
+        grid-column: 1;
+        gap: 1.5rem;
+        margin: 0.5rem 0;
+    }
+    
+    #auth-buttons {
+        grid-column: 1;
+        justify-content: center;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .leaderboard-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    main {
+        padding: 0 0.5rem;
+    }
+    
+    section {
+        padding: 1.5rem 1rem;
+    }
+    
+    /* Games grid */
+    .games-grid {
+        grid-template-columns: 1fr;
+        grid-auto-rows: minmax(180px, auto);
+    }
+    
+    /* Tables */
+    .table-container {
+        overflow-x: auto;
+        width: 100%;
+    }
+    
+    /* Profile page */
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .profile-info {
+        order: 2;
+    }
+    
+    .profile-avatar {
+        order: 1;
+        margin-bottom: 1rem;
+    }
+    
+    .profile-content {
+        flex-direction: column;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Settings page */
+    .settings-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .setting-control {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}
+
+/* Tablet styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .games-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Toast notification positioning for mobile */
+@media (max-width: 480px) {
+    .toast {
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+        width: auto;
+    }
+}
+
+/* Update these styles in styles.css */
+
+/* Leaderboard table styles */
+#leaderboard-content {
+    width: 100%;
+}
+
+.table-container {
+    overflow-x: auto;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+}
+
+#leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+#leaderboard-table th {
+    background-color: var(--bg-color);
+    padding: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+}
+
+#leaderboard-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+#leaderboard-table tr:last-child td {
+    border-bottom: none;
+}
+
+#leaderboard-table tr:hover {
+    background-color: rgba(119, 87, 171, 0.05);
+}
+
+/* Player cell with avatar */
+.player-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.leaderboard-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}
+
+/* Remove the duplicate table container at the bottom of leaderboard.html */
+/* The table should be created by JavaScript and placed inside #leaderboard-content */ 
